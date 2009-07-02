@@ -15,6 +15,8 @@
 % Print the title with a count in parentheses
 \newcommand{\CountingTitle}[2]{#1 (\showc{#2})}
 
+\renewcommand{\b}[1]{\textbf{#1}}
+
 %-------------------------------------------------------------------------------
 % Titles
 
@@ -42,7 +44,7 @@ module Talk where
 
 %-------------------------------------------------------------------------------
 
-\title{\textbf{Fun} and \textbf{generic} things to do with \textbf{EMGM}}
+\title{\b{Fun} and \b{generic} things to do with \b{EMGM}}
 
 \author{Sean Leather}
 
@@ -50,7 +52,59 @@ module Talk where
 
 %-------------------------------------------------------------------------------
 
-\frame{ \titlepage }
+\begin{frame}
+
+\titlepage
+
+\end{frame}
+
+%-------------------------------------------------------------------------------
+
+\begin{frame}
+
+\frametitle{Extensible and Modular Generics for the Masses}
+
+A powerful Haskell library that uses type classes with multiple parameters and
+overlapping and undecidable instances to form a highly flexible foundation for
+\b{datatype-generic programming} (\b{DGP}).
+
+The \b{emgm} package on Hackage provides the following:
+
+\begin{itemize}
+\item Documented platform for writing generic functions
+\item Flexible functionality for deriving instances using Template Haskell
+\item Growing collection of useful generic functions
+\end{itemize}
+
+\end{frame}
+
+%-------------------------------------------------------------------------------
+
+\begin{frame}
+
+\frametitle{History of EMGM}
+
+\begin{enumerate}
+
+\item Published as \b{Generics for the Masses} by Ralf Hinze in ????
+
+\item Revised by Bruno ???? Oliveira, Andres Löh, and Hinze for extensibility
+and modularity in 2006.
+
+\item Explored further and compared with other DGP libraries by Alexey Rodriguez
+Yakushev et al in 2007-2008.
+
+\item Packaged and released by Sean Leather, Jos\'{e} Pedro Magalh\~{a}es, and
+others at Utrecht University in September 2008.
+
+\end{enumerate}
+
+A tutorial is available as part of lecture notes created for the 2008 Advanced
+Functional Programming Summer School.
+
+http://...
+
+\end{frame}
 
 %-------------------------------------------------------------------------------
 
@@ -60,14 +114,7 @@ module Talk where
 
 \begin{itemize}
 
-\item (Datatype-)Generic Programming
-
-\item Extensible and Modular Generics for the Masses
-
-\begin{itemize}
-\item History
-\item What the Package Provides
-\end{itemize}
+\item Datatype-Generic Programming
 
 \item Representing Datatypes in EMGM
 
@@ -97,6 +144,58 @@ module Talk where
 \end{itemize}
 
 \end{itemize}
+
+\end{frame}
+
+%-------------------------------------------------------------------------------
+
+\begin{frame}
+
+\frametitle{Datatype-Generic Programming}
+
+\begin{itemize}
+
+\item The term was coined by Jeremy Gibbons in ????, but the technique has been
+around since at least ????.
+
+\item Scrap Your Boilerplate (SYB) is an example of a popular DGP library.
+
+\item DGP means generic on the \b{structure of a datatype}.
+
+\end{itemize}
+
+\end{frame}
+
+%-------------------------------------------------------------------------------
+
+\begin{frame}
+
+\frametitle{Structure of a Datatype}
+
+The structure is a way of representing the common aspects of many datatypes,
+e.g. constructors, alternatives, tupling. An intuitive way to determine the
+structure of a datatype is to look at its declaration.
+
+\begin{spec}
+data Tree = Tip | Leaf Int | Bin Int Tree Tree
+\end{spec}
+
+There are multiple \b{generic views} of the structure. SYB uses one based on
+combinators. EMGM uses a different one based on sums of products.
+
+\end{frame}
+
+%-------------------------------------------------------------------------------
+
+\begin{frame}
+
+\frametitle{Representing Structure in EMGM}
+
+To view the |Tree| type in its structure representation...
+
+\begin{code}
+data Tree = Tip | Leaf Int | Bin Int Tree Tree
+\end{code}
 
 \end{frame}
 

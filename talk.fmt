@@ -116,4 +116,10 @@
 %format TypeDescrT              = "\Typ{TypeDescr}"
 %format TypeDescr               = "\Con{TypeDescr}"
 
+% Other types
+%format Tree                    = "\Typ{Tree}"
+%format Tip                     = "\Con{Tip}"
+%format Leaf                    = "\Con{Leaf}"
+%format Bin                     = "\Con{Bin}"
+
 %endif
