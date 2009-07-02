@@ -33,6 +33,15 @@
 
 %-------------------------------------------------------------------------------
 
+%if style == newcode
+\begin{code}
+{-# LANGUAGE TypeOperators #-}
+module Talk where
+\end{code}
+%endif
+
+%-------------------------------------------------------------------------------
+
 \title{\textbf{Fun} and \textbf{generic} things to do with \textbf{EMGM}}
 
 \author{Sean Leather}
@@ -88,6 +97,92 @@
 \end{itemize}
 
 \end{itemize}
+
+\end{frame}
+
+%-------------------------------------------------------------------------------
+
+\begin{frame}
+
+\begin{code}
+data UnitT = Unit
+\end{code}
+%if style == newcode
+\begin{code}
+  deriving (Enum, Eq, Ord, Read, Show)
+\end{code}
+%endif
+
+\begin{code}
+data aa :+: bb = L aa | R bb
+\end{code}
+%if style == newcode
+\begin{code}
+  deriving (Eq, Ord, Read, Show)
+\end{code}
+%endif
+
+\begin{code}
+data aa :*: bb = aa ::*:: bb
+\end{code}
+%if style == newcode
+\begin{code}
+  deriving (Eq, Ord, Read, Show)
+\end{code}
+%endif
+
+\begin{code}
+data EPT dd rr = EP { from :: (dd -> rr), to :: (rr -> dd) }
+\end{code}
+
+\begin{code}
+data ConDescrT   = ConDescr dots
+\end{code}
+%if style == newcode
+\begin{code}
+  deriving (Enum, Eq, Ord, Read, Show)
+\end{code}
+%endif
+\begin{code}
+data TypeDescrT  = TypeDescr dots
+\end{code}
+%if style == newcode
+\begin{code}
+  deriving (Enum, Eq, Ord, Read, Show)
+\end{code}
+%endif
+
+\end{frame}
+
+%-------------------------------------------------------------------------------
+
+\begin{frame}
+
+\begin{code}
+class Generic gg where
+  rconstant  :: (Enum aa, Eq aa, Ord aa, Read aa, Show aa) => gg aa
+  rint       :: gg Int
+  rinteger   :: gg Integer
+  rfloat     :: gg Float
+  rdouble    :: gg Double
+  rchar      :: gg Char
+  runit      :: gg UnitT
+  rsum       :: gg aa -> gg bb -> gg (aa :+: bb)
+  rprod      :: gg aa -> gg bb -> gg (aa :*: bb)
+  rcon       :: ConDescrT -> gg aa -> gg aa
+  rtype      :: TypeDescrT -> EPT bb aa -> gg aa -> gg bb
+\end{code}
+%if style == newcode
+\begin{code}
+  rint      = rconstant
+  rinteger  = rconstant
+  rfloat    = rconstant
+  rdouble   = rconstant
+  rchar     = rconstant
+  runit     = rconstant
+  rcon      = const id
+\end{code}
+%endif
 
 \end{frame}
 

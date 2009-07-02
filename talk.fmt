@@ -1,362 +1,119 @@
 %include polycode.fmt
 %include spacing.fmt
 
+%-------------------------------------------------------------------------------
+% Definitions
+%
 
-% the `doubleequals' macro is due to Jeremy Gibbons
+%if style /= newcode
+
+% Due to Jeremy Gibbons:
 \def\doubleequals{\mathrel{\unitlength 0.01em
   \begin{picture}(78,40)
     \put(7,34){\line(1,0){25}} \put(45,34){\line(1,0){25}}
     \put(7,14){\line(1,0){25}} \put(45,14){\line(1,0){25}}
   \end{picture}}}
 
+%endif
+
+%-------------------------------------------------------------------------------
+% Commands
+
+%if style /= newcode
+
+\renewcommand\Varid[1]{\mathord{\textsf{#1}}}
+\let\Conid\Varid
+
+\newcommand\Con[1]{{\color{Con}\Conid{#1}}}
+\newcommand\Typ[1]{{\color{Typ}\Conid{#1}}}
+\newcommand\Var[1]{{\color{Var}\Varid{#1}}}
+\newcommand\Key[1]{{\color{Key}\textsf{\textbf{#1}}}}
+\newcommand\Module[1]{{\color{Module}\Conid{#1}}}
+
+%endif
+
+%-------------------------------------------------------------------------------
+% Colors
+
+%if style /= newcode
+
+\colorlet{Typ}{red!50!black}
+\colorlet{Con}{black}
+\colorlet{Var}{black}
+\colorlet{Key}{orange!90!black}
+\colorlet{Module}{red!50!blue}
+
+%endif
+
+%-------------------------------------------------------------------------------
+% Formats
+%
+
+% Ignoring
 %if style == newcode
-
-% datatypes macro
-%format (typN (x))              = "x"
-
-% underscore macro
-%format (und (x) (y))           = x "_" y
-
-% subscript macro
-%format (sbs (x) (y))           = x "_" y
-
-% To remove warnings of defaulting
-%format (Int_ (x))              = "(" x " :: Int)"
-
-%format ^^                      =
-%format ldots                   =
-%format #                       = *
-%format DummySpace              = " "
-
+%format dots                    =  " "
 %else
+%format dots                    =  "..."
+%endif
 
-%format TPF                     = "\varsf{\Conid{"
-%format ETPF                    = "}}"
+%if style /= newcode
 
-%format V                       = "\Varid{"
-%format EV                      = "}"
-
-% datatypes macro
-%format (typN (x))              =  TPF x ETPF
-
-% underscore macro
-%format (und (x) (y))           = x
-
-% subscript macro
-%format (sbs (x) (y))           = x "_{" y "}"
-
-% To remove warnings of defaulting
-%format (Int_ (x))              = x
-
-\def\varsf#1{{%
-  \let\Varid=\mathsf
-  \let\Conid=\mathsf
-  \mathsf{
-  #1}}}
-
-%format ~>                      = "\rightsquigarrow "
-
-% Format forall on types
-%format forall (a)              =  "\forall " a
-% Prevent . from turning into \circ
-%format .                       =  "\,.\,"
-
-% Pedro: formatting for section 2.1 -> for now it stays here,
-%        if it causes problems I can move it to the relevant section
-%format ListBool                = List
-%format Nil_ListBool            = V "Nil" EV
-%format Cons_ListBool           = V "Cons" EV
-
-%format List'                   = List
-%format Tree                    = TPF "Tree" ETPF
-%format Tree3                   = TPF "Tree3" ETPF
-
-%format ExpQ                    = TPF "ExpQ" ETPF
-
-%format eq_Bool                 = V "eq_{Bool}" EV
-%format eq_Int                  = V "eq_{Int}" EV
-%format eq_Char                 = V "eq_{Char}" EV
-%format length_ListBool         = V "length" EV
-%format length_List'            = V "length" EV
-%format and'                    = V "and" EV
-%format or'                     = V "or" EV
-%format foldr'                  = V "foldr" EV
-%format and''                   = V "and" EV
-%format or''                    = V "or" EV
-% Pedro: end formatting for section 2.1
-
-% Pedro: formatting for section 2.2
-%format List                    = TPF "List" ETPF
-%format Nil_List                = V "Nil_{List}" EV
-%format Cons_List               = V "Cons_{List}" EV
-
-%format LogicS                  = TPF "Logic_{s}" ETPF
-%format LitS                    = V "Lit" EV
-%format NotS                    = V "Not" EV
-%format OrS                     = V "Or" EV
-
-%format ExprS                   = TPF "Expr_{s}" ETPF
-%format ExprVarS                = V "Var" EV
-%format ExprLitS                = V "Lit" EV
-%format SumS                    = V "Sum" EV
-%format EquationS               = TPF "Equation_{s}" ETPF
-%format EquationC               = V "{Equation}" EV
-%format LinearSystemS           = TPF "LinearSystem_{s}" ETPF
-
-%format TreeRec                 = TPF "Tree" ETPF
-%format ForestRec               = TPF "Forest" ETPF
-%format EmptyRec                = V "Empty" EV
-%format NodeRec                 = V "Node" EV
-%format NilRec                  = V "Nil" EV
-%format ConstRec                = V "Const" EV
-
-%format LogicL                  = TPF "Logic_{L}" ETPF
-%format LitL                    = V "Lit" EV
-%format NotL                    = V "Not" EV
-%format OrL                     = V "Or" EV
-
-%format LogicF                  = TPF "Logic_{F}" ETPF
-%format LitF                    = V "Lit" EV
-%format NotF                    = V "Not" EV
-%format OrF                     = V "Or" EV
-
-%format LogicL'                 = TPF "Logic^{\prime}_{L}" ETPF
-
-%format Perfect                 = TPF "Perfect" ETPF
-
-%format Dynamic                 = TPF "Dynamic" ETPF
-%format Rep                     = TPF "Rep" ETPF
-
-%format Stat                    = TPF "Stat" ETPF
-
-%format eq_ListBool             = V "eq_{List_{Bool}}" EV
-%format eq_List                 = V "eq_{List}" EV
-%format eq_LogicS               = V "eq_{Logic_{s}}" EV
-%format eq_ExprS                = V "eq_{Expr_{s}}" EV
-%format eq_TreeRec              = V "eq_{Tree}" EV
-%format eq_ForestRec            = V "eq_{Forest}" EV
-%format zipWith'                = V "zipWith" EV
-%format eq_LogicL'              = V "eq_{Logic_{L}^{\prime}}" EV
-%format eq_LogicF               = V "eq_{Logic_{F}}" EV
-%format eq_f                    = V "eq_{f}" EV
-%format eq_Perfect              = V "eq_{Perfect}" EV
-%format eq_a                    = V "eq_{a}" EV
-%format eq_Dynamic              = V "eq_{Dynamic}" EV
-%format eq_Stat                 = V "eq_{Stat}" EV
-
-% Pedro: end formatting for section 2.2
-
-% Pedro: formatting for section 3
-%format :<->:                   = "\mathbin{\leftrightarrow}"
-%format :->:                    = "\mathbin{\rightarrow}"
-%format :&&:                    = "\mathbin{\wedge}"
-%format :||:                    = "\mathbin{\vee}"
-%format :|:                     = "\mathbin{\vee}"
-%format T_                      = "\it{True}"
-%format F_                      = "\it{False}"
-%format Not a                   = "\neg" a
-%format Not2 a                  = "\neg\neg" a
-%format :*:                     = "\mathbin{\times} "
-%format :/:                     = "\mathbin{\div} "
-%format :+:                     = "\mathbin{+}"
-%format :-:                     = "\mathbin{-}"
-%format :==:                    = "\mathbin{\equiv} "
-%format :<-->:                  = "\mathbin{\leftrightarrow} "
-%format ldots                   = "\ldots "
-%format rightarrow a            = "\ \stackrel{"a"}{\Longrightarrow}\ "
-
-%format Logic                   = TPF "Logic" ETPF
-%format Expr                    = TPF "Expr" ETPF
-%format LinearSystem            = TPF "LinearSystem" ETPF
-%format Equations               = TPF "Equations" ETPF
-%format LinearExpr              = TPF "LinearExpr" ETPF
-%format Equation                = TPF "LinearExpr" ETPF
-%format Matrix                  = TPF "Matrix" ETPF
-
-%format :$                      = "\diamond"
-%format :>                      = ^^ "\widehat{:}" ^^
-%format Spine                   = TPF "Spine" ETPF
-%format Typed                   = TPF "Typed" ETPF
-%format IntR                    = "Int"
-%format ListR                   = "List"
-% Pedro: end formatting for section 3
-
-% Formatting for the libraries' sections
-%format EP                = TPF "EP" ETPF
-%format EP_               = V "EP" EV
-%format UnitT             = TPF "Unit" ETPF
-%format Sum               = TPF "Sum" ETPF
-%format ProdT             = TPF "Prod" ETPF
-%format fromList          = V "from_{List}" EV
-%format toList            = V "to_{List}" EV
-%format rList             = V "r_{List}" EV
-%format rList'            = rList
-%format rList1            = V "r_{List,1}" EV
-%format rList2            = V "r_{List,2}" EV
-%format Crush             = TPF "Crush" ETPF
-%format Crush_            = V "Crush" EV
-%format CrushT            = Crush
-%format GZipWith          = TPF "GZipWith" ETPF
-%format GZipWith_         = V "GZipWith" EV
-%format Rep3              = TPF "Rep_{3}" ETPF
-% end formatting for the libraries' sections
-
-% formatting for section 8
-%format TT                =  TPF T ETPF
-% end formatting for section 8
-
-% Pedro: formatting for the solutions section
-%format con1ExprS               = V "con1_{Expr_{S}}" EV
-%format con2ExprS               = V "con2_{Expr_{S}}" EV
-%format con3ExprS               = V "con3_{Expr_{S}}" EV
-%format tyExprS                 = V "ty_{Expr_{S}}" EV
-%format Qt                      = TPF "Q" ETPF
-%format QC                      = V "Q" EV
-% Pedro: end formatting for the solutions section
-
-% Pedro: formatting for variables used everywhere
-%format a1                      = V "a_{1}" EV
-%format a2                      = V "a_{2}" EV
-%format b1                      = V "b_{1}" EV
-%format b2                      = V "b_{2}" EV
-%format c1                      = V "c_{1}" EV
-%format c2                      = V "c_{2}" EV
-%format con1                    = V "con_{1}" EV
-%format con2                    = V "con_{2}" EV
-%format e1                      = V "e_{1}" EV
-%format e2                      = V "e_{2}" EV
-%format e1'                     = V "e_{1}^{\prime}" EV
-%format e2'                     = V "e_{2}^{\prime}" EV
-%format ep1                     = V "ep_{1}" EV
-%format ep2                     = V "ep_{2}" EV
-%format f1                      = V "f_{1}" EV
-%format f2                      = V "f_{2}" EV
-%format l1                      = V "l_{1}" EV
-%format l2                      = V "l_{2}" EV
-%format r1                      = V "r_{1}" EV
-%format r2                      = V "r_{2}" EV
-%format rA                      = V "r_{a}" EV
-%format rB                      = V "r_{b}" EV
-%format rC                      = V "r_{c}" EV
-%format t1                      = V "t_{1}" EV
-%format t2                      = V "t_{2}" EV
-%format x1                      = V "x_{1}" EV
-%format x2                      = V "x_{2}" EV
-%format x3                      = V "x_{3}" EV
-%format x1'                     = V "x_{1}^{\prime}" EV
-%format x2'                     = V "x_{2}^{\prime}" EV
-%format x3'                     = V "x_{3}^{\prime}" EV
-%format y1                      = V "y_{1}" EV
-%format y2                      = V "y_{2}" EV
-%format y3                      = V "y_{3}" EV
-% Pedro: end formatting for variables used everywhere
-
-
-% Kinds
-%format #                       =  "\star "
-%format kK                      =  "\kappa"
-%format lK                      =  "\nu"
-
-%format aT                      =  TPF a ETPF
-%format aT1                     =  TPF "a_{1}" ETPF
-%format aT2                     =  TPF "a_{2}" ETPF
-%format bT                      =  TPF b ETPF
-%format bT1                     =  TPF "b_{1}" ETPF
-%format bT2                     =  TPF "b_{2}" ETPF
-%format cT                      =  TPF c ETPF
-%format dT                      =  TPF d ETPF
-%format d1T                     =  TPF "d_{1}" ETPF
-%format d2T                     =  TPF "d_{2}" ETPF
-%format eT                      =  TPF e ETPF
-%format fT                      =  TPF f ETPF
-%format gT                      =  TPF g ETPF
-%format mT                      =  TPF m ETPF
-%format qT                      =  TPF q ETPF
-%format rT                      =  TPF r ETPF
-%format tT                      =  TPF t ETPF
-%format uT                      =  TPF u ETPF
-
-% General Haskell types
-%format Char                    =  TPF "Char" ETPF
-%format String                  =  TPF "String" ETPF
-%format Bool                    =  TPF "Bool" ETPF
-%format BoolT                   =  TPF "Bool" ETPF
-%format OrderingT               =  TPF "Ordering" ETPF
-%format Double                  =  TPF "Double" ETPF
-%format Float                   =  TPF "Float" ETPF
-%format Int                     =  TPF "Int" ETPF
-%format Integer                 =  TPF "Integer" ETPF
-%format Maybe                   =  TPF "Maybe" ETPF
-%format IO                      =  TPF "IO" ETPF
-%format Bit                     =  TPF "Bit" ETPF
-%format Either                  =  TPF "Either" ETPF
-%format Fix                     =  TPF "Fix" ETPF
-%format _Fork                   =  "\Varid{Fork}"
-%format Var                     =  TPF "Var" ETPF
-%format _Var                    =  "\Varid{Var}"
-%format Class                   =  TPF "Class" ETPF
-%format Body                    =  TPF "Body" ETPF
-%format _Body                   =  "\Varid{Body}"
-%format Type                    =  TPF "Type" ETPF
-%format Statement               =  TPF "Statement" ETPF
-%format Constructor             =  TPF "Constructor" ETPF
-%format Doc                     =  TPF "Doc" ETPF
-%format GTree                   =  TPF "GTree" ETPF
-%format Object                  =  TPF "Object" ETPF
-%format CharNil                 =  Nil
-%format CharCons                =  Cons
-%format State                   =  TPF "State" ETPF
-%format Id                      =  TPF "Id" ETPF
-%format ShowS                   =  TPF "ShowS" ETPF
-%format _Id                     =  "\Varid{Id}"
-
- 
-%format Cons                    =  "\Varid{Cons}"
-%format Nil                     =  "\Varid{Nil}"
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% Notes:
-% o  Spacing:
-%    use `^' (no space), `^^' (insert space) or a directive of the form:
-%       %format eta a           =  "\eta " a
-% o Super- oder subscripting: use a directive of the form:
-%       %format (unit_(i))      =  unit "_{" i "}"
-% o same vertical spacing as in an eqnarray:
-%       %subst newline          = "\\[3pt]'n"
-%       ...
-%       %subst newline          = "\\'n"
-%
-
-
-% Layout
-
-%format ^                       =  " "
-%format ^^                      =  "\; "
-
-% Haskell-related stuff
-%format undefined               =  "\Varid{undefined}"
-%format not                     =  "\Varid{not}"
+% Standard Haskell symbols
+%format undefined               =  "\Var{undefined}"
+%format not                     =  "\Var{not}"
 %format ==                      =  "\doubleequals "
 %format /=                      =  "\not\doubleequals "
 
-% Define a new color for yourself if you want.
-\definecolor{darkgreen}{rgb}{0,0.7,0.08}
+% Standard Haskell types
+%format Int                     =  "\Typ{Int}"
+%format Integer                 =  "\Typ{Integer}"
+%format Float                   =  "\Typ{Float}"
+%format Double                  =  "\Typ{Double}"
+%format Char                    =  "\Typ{Char}"
 
-% Macros used for commenting on the article
-%if final
-\newcommand{\REM}[3]{}
-\newcommand{\Johan}[1]{}
-\newcommand{\Alexey}[1]{}
-\newcommand{\Pedro}[1]{}
-\newcommand{\Sean}[1]{}
-%else
-\newcommand{\REM}[3]{{\small \textcolor{#2}{[\textbf{#1:} #3]}}}
-\newcommand{\Johan}[1]{\REM{Johan}{red}{#1}}
-\newcommand{\Alexey}[1]{\REM{Alexey}{orange}{#1}}
-\newcommand{\Pedro}[1]{\REM{Pedro}{blue}{#1}}
-\newcommand{\Sean}[1]{\REM{Sean}{darkgreen}{#1}}
-%endif
+% Typ variables
+%format aa                      =  "\Typ{a}"
+%format bb                      =  "\Typ{b}"
+%format cc                      =  "\Typ{c}"
+%format dd                      =  "\Typ{d}"
+%format ee                      =  "\Typ{e}"
+%format ff                      =  "\Typ{f}"
+%format gg                      =  "\Typ{g}"
+%format hh                      =  "\Typ{h}"
+%format ii                      =  "\Typ{i}"
+%format jj                      =  "\Typ{j}"
+%format kk                      =  "\Typ{k}"
+%format ll                      =  "\Typ{l}"
+%format mm                      =  "\Typ{m}"
+%format nn                      =  "\Typ{n}"
+%format oo                      =  "\Typ{o}"
+%format pp                      =  "\Typ{p}"
+%format qq                      =  "\Typ{q}"
+%format rr                      =  "\Typ{r}"
+%format ss                      =  "\Typ{s}"
+%format tt                      =  "\Typ{t}"
+%format uu                      =  "\Typ{u}"
+%format vv                      =  "\Typ{v}"
+%format ww                      =  "\Typ{w}"
+%format xx                      =  "\Typ{x}"
+%format yy                      =  "\Typ{y}"
+%format zz                      =  "\Typ{z}"
+
+% EMGM symbols
+%format :+:                     = "\mathbin{\color{Typ}\vcentcolon\kern-0.4em+\kern-0.4em\vcentcolon}"
+%format :*:                     = "\mathbin{\color{Typ}\vcentcolon\kern-0.4em*\kern-0.4em\vcentcolon}"
+%format ::*::                   = "\mathbin{\color{Con}\vcentcolon\kern-0.4em*\kern-0.4em\vcentcolon}"
+
+% EMGM types
+%format UnitT                   = "\Typ{Unit}"
+%format Unit                    = "\Con{Unit}"
+%format L                       = "\Con{L}"
+%format R                       = "\Con{R}"
+%format EPT                     = "\Typ{EP}"
+%format EP                      = "\Con{EP}"
+%format ConDescrT               = "\Typ{ConDescr}"
+%format ConDescr                = "\Con{ConDescr}"
+%format TypeDescrT              = "\Typ{TypeDescr}"
+%format TypeDescr               = "\Con{TypeDescr}"
 
 %endif
