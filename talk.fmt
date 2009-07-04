@@ -30,6 +30,8 @@
 \newcommand\Key[1]{{\color{Key}\textsf{\textbf{#1}}}}
 \newcommand\Module[1]{{\color{Module}\Conid{#1}}}
 
+\newcommand\struct[1]{#1^{\circ}}
+
 %endif
 
 %-------------------------------------------------------------------------------
@@ -56,6 +58,13 @@
 %format dots                    =  "..."
 %endif
 
+% Ignoring
+%if style == newcode
+%format UnitTuple               =  "()"
+%else
+%format UnitTuple               =  "\Typ{()}"
+%endif
+
 %if style /= newcode
 
 % Standard Haskell symbols
@@ -70,6 +79,7 @@
 %format Float                   =  "\Typ{Float}"
 %format Double                  =  "\Typ{Double}"
 %format Char                    =  "\Typ{Char}"
+%format Either                  =  "\Typ{Either}"
 
 % Typ variables
 %format aa                      =  "\Typ{a}"
@@ -99,6 +109,10 @@
 %format yy                      =  "\Typ{y}"
 %format zz                      =  "\Typ{z}"
 
+% Structure symbols
+%format UnitS                   = "\mathbb{1}"
+%format *                       = "*"
+
 % EMGM symbols
 %format :+:                     = "\mathbin{\color{Typ}\vcentcolon\kern-0.4em+\kern-0.4em\vcentcolon}"
 %format :*:                     = "\mathbin{\color{Typ}\vcentcolon\kern-0.4em*\kern-0.4em\vcentcolon}"
@@ -121,5 +135,7 @@
 %format Tip                     = "\Con{Tip}"
 %format Leaf                    = "\Con{Leaf}"
 %format Bin                     = "\Con{Bin}"
+%format TreeS                   = "\struct{" Tree "}"
+%format TreeS'                  = TreeS
 
 %endif

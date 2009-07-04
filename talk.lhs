@@ -20,8 +20,8 @@
 %-------------------------------------------------------------------------------
 % Titles
 
-\newcounter{countA}
-\newcommand{\EqualityExampleTitle}{\CountingTitle{Defining an Example: Equality}{countA}}
+\newcounter{countRepresentingStructure}
+\newcommand{\RepresentingStructure}{\CountingTitle{Representing Structure in EMGM}{countRepresentingStructure}}
 
 %-------------------------------------------------------------------------------
 % Formatting
@@ -38,6 +38,7 @@
 %if style == newcode
 \begin{code}
 {-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE StandaloneDeriving #-}
 module Talk where
 \end{code}
 %endif
@@ -176,12 +177,12 @@ The structure is a way of representing the common aspects of many datatypes,
 e.g. constructors, alternatives, tupling. An intuitive way to determine the
 structure of a datatype is to look at its declaration.
 
-\begin{spec}
-data Tree = Tip | Leaf Int | Bin Int Tree Tree
-\end{spec}
+\begin{code}
+data Tree aa = Tip | Leaf aa | Node Int (Tree aa) (Tree aa)
+\end{code}
 
 There are multiple \b{generic views} of the structure. SYB uses one based on
-combinators. EMGM uses a different one based on sums of products.
+combinators. EMGM uses a different one based on binary sums of products.
 
 \end{frame}
 
@@ -189,12 +190,25 @@ combinators. EMGM uses a different one based on sums of products.
 
 \begin{frame}
 
-\frametitle{Representing Structure in EMGM}
+\frametitle{\RepresentingStructure}
 
-To view the |Tree| type in its structure representation...
+To view the |Tree| type,
+
+\begin{spec}
+data Tree aa = Tip | Leaf aa | Node Int (Tree aa) (Tree aa)
+\end{spec}
+
+in its structure representation, we can substitute its syntax with (nested) sums
+(alternatives) and products (pairs).
+
+\begin{spec}
+type TreeS' aa = UnitS + aa + Int * Tree aa * Tree aa
+\end{spec}
+
+Another way of looking at |TreeS'| using standard Haskell types is
 
 \begin{code}
-data Tree = Tip | Leaf Int | Bin Int Tree Tree
+type TreeS' aa = Either UnitTuple (Either aa (Int, (Tree aa, Tree aa)))
 \end{code}
 
 \end{frame}
@@ -203,51 +217,62 @@ data Tree = Tip | Leaf Int | Bin Int Tree Tree
 
 \begin{frame}
 
+\frametitle{\RepresentingStructure}
+
+While we might use standard Haskell types, we choose to use our own types for
+readability and to prevent confusion between datatypes used in the
+representation and those that are represented.
+
 \begin{code}
-data UnitT = Unit
+data UnitT      = Unit          -- ()
+
+data aa :*: bb  = aa ::*:: bb   -- (a, b)
+infixr 6 :*:
+
+data aa :+: bb  = L aa | R bb   -- Either a b
+infixr 5 :+:
+
+type TreeS aa = UnitT :+: aa :+: Int :+: Tree aa :+: Tree aa
 \end{code}
+
 %if style == newcode
 \begin{code}
-  deriving (Enum, Eq, Ord, Read, Show)
+infixr 6 ::*::
+deriving instance Enum UnitT
+deriving instance Eq UnitT
+deriving instance Ord UnitT
+deriving instance Read UnitT
+deriving instance Show UnitT
+deriving instance (Eq aa, Eq bb) => Eq (aa :+: bb)
+deriving instance (Ord aa, Ord bb) => Ord (aa :+: bb)
+deriving instance (Read aa, Read bb) => Read (aa :+: bb)
+deriving instance (Show aa, Show bb) => Show (aa :+: bb)
+deriving instance (Eq aa, Eq bb) => Eq (aa :*: bb)
+deriving instance (Ord aa, Ord bb) => Ord (aa :*: bb)
+deriving instance (Read aa, Read bb) => Read (aa :*: bb)
+deriving instance (Show aa, Show bb) => Show (aa :*: bb)
 \end{code}
 %endif
 
-\begin{code}
-data aa :+: bb = L aa | R bb
-\end{code}
-%if style == newcode
-\begin{code}
-  deriving (Eq, Ord, Read, Show)
-\end{code}
-%endif
-
-\begin{code}
-data aa :*: bb = aa ::*:: bb
-\end{code}
-%if style == newcode
-\begin{code}
-  deriving (Eq, Ord, Read, Show)
-\end{code}
-%endif
-
-\begin{code}
-data EPT dd rr = EP { from :: (dd -> rr), to :: (rr -> dd) }
-\end{code}
+We also want to keep around meta-information about the constructors and the
+types.
 
 \begin{code}
 data ConDescrT   = ConDescr dots
-\end{code}
-%if style == newcode
-\begin{code}
-  deriving (Enum, Eq, Ord, Read, Show)
-\end{code}
-%endif
-\begin{code}
+
 data TypeDescrT  = TypeDescr dots
 \end{code}
+
 %if style == newcode
 \begin{code}
-  deriving (Enum, Eq, Ord, Read, Show)
+deriving instance Eq ConDescrT
+deriving instance Ord ConDescrT
+deriving instance Read ConDescrT
+deriving instance Show ConDescrT
+deriving instance Eq TypeDescrT
+deriving instance Ord TypeDescrT
+deriving instance Read TypeDescrT
+deriving instance Show TypeDescrT
 \end{code}
 %endif
 
@@ -256,6 +281,36 @@ data TypeDescrT  = TypeDescr dots
 %-------------------------------------------------------------------------------
 
 \begin{frame}
+
+\frametitle{\RepresentingStructure}
+
+In order to access the structure of a datatype, we need to translate a value
+from its native form to a representation form. This is done using a
+\b{isomorphism} implemented as an \b{embedding-projection pair}.
+
+\begin{code}
+data EPT dd rr = EP { from :: (dd -> rr), to :: (rr -> dd) }
+
+treeEP = EP fromTree toTree
+
+  where  fromTree  Tip             = L Unit
+         fromTree  (Leaf a)        = R (L a)
+         fromTree  (Node i t1 t2)  = R (R (i ::*:: t1 ::*:: t2))
+
+         toTree  (L Unit)                       = Tip
+         toTree  (R (L a))                      = Leaf a
+         toTree  (R (R (i ::*:: t1 ::*:: t2)))  = Node i t1 t2
+\end{code}
+
+\end{frame}
+
+%-------------------------------------------------------------------------------
+
+\begin{frame}
+
+\frametitle{\RepresentingStructure}
+
+Lastly, we need to represent the cases of a generic function.
 
 \begin{code}
 class Generic gg where
@@ -282,6 +337,12 @@ class Generic gg where
   rcon      = const id
 \end{code}
 %endif
+
+\end{frame}
+
+%-------------------------------------------------------------------------------
+
+\begin{frame}
 
 \end{frame}
 
