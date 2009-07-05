@@ -39,6 +39,9 @@
 \begin{code}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE FlexibleInstances #-}
 module Talk where
 \end{code}
 %endif
@@ -232,7 +235,7 @@ infixr 6 :*:
 data aa :+: bb  = L aa | R bb   -- Either a b
 infixr 5 :+:
 
-type TreeS aa = UnitT :+: aa :+: Int :+: Tree aa :+: Tree aa
+type TreeS aa = UnitT :+: aa :+: Int :*: Tree aa :*: Tree aa
 \end{code}
 
 %if style == newcode
@@ -291,7 +294,7 @@ from its native form to a representation form. This is done using a
 \begin{code}
 data EPT dd rr = EP { from :: (dd -> rr), to :: (rr -> dd) }
 
-treeEP = EP fromTree toTree
+epTree = EP fromTree toTree
 
   where  fromTree  Tip             = L Unit
          fromTree  (Leaf a)        = R (L a)
@@ -310,9 +313,13 @@ treeEP = EP fromTree toTree
 
 \frametitle{\RepresentingStructure}
 
-Lastly, we need to represent the cases of a generic function.
+A generic function is written by induction on the structure of a datatype. We
+represent these cases as methods of a type class.
 
 \begin{code}
+infixr 6 `rprod`
+infixr 5 `rsum`
+
 class Generic gg where
   rconstant  :: (Enum aa, Eq aa, Ord aa, Read aa, Show aa) => gg aa
   rint       :: gg Int
@@ -343,6 +350,32 @@ class Generic gg where
 %-------------------------------------------------------------------------------
 
 \begin{frame}
+
+\frametitle{\RepresentingStructure}
+
+To add a new datatype representation, we need to provide an |rtype| value. To
+avoid having to provide all of these representations for every function, we use
+another type class, |Rep|.
+
+\begin{code}
+class Rep gg aa where
+  rep :: gg aa
+
+instance (Generic gg, Rep gg aa) => Rep gg (Tree aa) where
+  rep =  rtype  (TypeDescr dots)
+                epTree
+                (  rcon (ConDescr dots)  runit  `rsum`
+                   rcon (ConDescr dots)  rep    `rsum`
+                   rcon (ConDescr dots)  (rep `rprod` rep `rprod` rep))
+\end{code}
+
+Of course, we need instances for the constant types.
+
+\begin{code}
+instance (Generic gg) => Rep gg Int where rep = rint
+
+dots
+\end{code}
 
 \end{frame}
 
