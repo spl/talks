@@ -58,7 +58,14 @@
 %format dots                    =  "..."
 %endif
 
-% Ignoring
+% Vertical space
+%if style == newcode
+%format >-<                     =
+%else
+%format >-<                     =  "\vspace{-1pt} "
+%endif
+
+% Unit
 %if style == newcode
 %format UnitTuple               =  "()"
 %else
@@ -130,12 +137,20 @@
 %format TypeDescrT              = "\Typ{TypeDescr}"
 %format TypeDescr               = "\Con{TypeDescr}"
 
-% Other types
+% Tree
 %format Tree                    = "\Typ{Tree}"
 %format Tip                     = "\Con{Tip}"
 %format Leaf                    = "\Con{Leaf}"
 %format Bin                     = "\Con{Bin}"
 %format TreeS                   = "\struct{" Tree "}"
 %format TreeS'                  = TreeS
+
+%format EmptyT                  = "\Typ{Empty}"
+%format Empty                   = "\Con{Empty}"
+
+%format EnumT                   = "\Typ{Enum}"
+
+%format CrushT                  = "\Typ{Crush}"
+%format Crush                   = "\Con{Crush}"
 
 %endif
