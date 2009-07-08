@@ -64,17 +64,13 @@ test = test1
 \date{9 July 2009}
 
 %-------------------------------------------------------------------------------
-
 \begin{frame}
 
 \titlepage
 
 \end{frame}
-
 %-------------------------------------------------------------------------------
-
 \begin{frame}
-
 \frametitle{Extensible and Modular Generics for the Masses}
 
 A powerful Haskell library that uses type classes with multiple parameters and
@@ -90,11 +86,8 @@ The \b{\pkg{emgm}} package on Hackage provides the following:
 \end{itemize}
 
 \end{frame}
-
 %-------------------------------------------------------------------------------
-
 \begin{frame}
-
 \frametitle{History of EMGM}
 
 \begin{enumerate}
@@ -118,11 +111,8 @@ Functional Programming Summer School.
 http://...
 
 \end{frame}
-
 %-------------------------------------------------------------------------------
-
 \begin{frame}
-
 \frametitle{Overview}
 
 \begin{itemize}
@@ -159,11 +149,8 @@ http://...
 \end{itemize}
 
 \end{frame}
-
 %-------------------------------------------------------------------------------
-
 \begin{frame}
-
 \frametitle{Datatype-Generic Programming}
 
 \begin{itemize}
@@ -178,11 +165,8 @@ around since at least ????.
 \end{itemize}
 
 \end{frame}
-
 %-------------------------------------------------------------------------------
-
 \begin{frame}
-
 \frametitle{Structure of a Datatype}
 
 The structure is a way of representing the common aspects of many datatypes,
@@ -205,11 +189,8 @@ There are multiple \b{generic views} of the structure. SYB uses one based on
 combinators. EMGM uses a different one based on binary sums of products.
 
 \end{frame}
-
 %-------------------------------------------------------------------------------
-
 \begin{frame}
-
 \frametitle{\RepresentingStructure}
 
 To view the |Tree| type,
@@ -235,11 +216,8 @@ type TreeS' aa = Either UnitTuple (Either aa (Int, (Tree aa, Tree aa)))
 \end{code}
 
 \end{frame}
-
 %-------------------------------------------------------------------------------
-
 \begin{frame}
-
 \frametitle{\RepresentingStructure}
 
 While we might use standard Haskell types, we choose to use our own types for
@@ -302,11 +280,8 @@ deriving instance Show TypeDescrT
 %endif
 
 \end{frame}
-
 %-------------------------------------------------------------------------------
-
 \begin{frame}
-
 \frametitle{\RepresentingStructure}
 
 In order to access the structure of a datatype, we need to translate a value
@@ -330,11 +305,8 @@ epTree = EP fromTree toTree
 \end{code}
 
 \end{frame}
-
 %-------------------------------------------------------------------------------
-
 \begin{frame}
-
 \frametitle{\RepresentingStructure}
 
 A generic function is written by induction on the structure of a datatype. We
@@ -357,11 +329,8 @@ Our \b{universe} supports constant types, structure types, and the ability to
 extend the universe with arbitrary datatypes using |rtype|.
 
 \end{frame}
-
 %-------------------------------------------------------------------------------
-
 \begin{frame}
-
 \frametitle{\RepresentingStructure}
 
 To add a new datatype representation, we need to provide an |rtype| value. To
@@ -390,11 +359,8 @@ dots
 \end{code}
 
 \end{frame}
-
 %-------------------------------------------------------------------------------
-
 \begin{frame}
-
 \frametitle{Generating the Structure Representation}
 
 Fortunately, we don't have to write all of the previous boilerplate. We can
@@ -418,11 +384,8 @@ pragma or command-line option in GHC to see the code generated at compile time:
 \end{spec}
 
 \end{frame}
-
 %-------------------------------------------------------------------------------
-
 \begin{frame}
-
 \frametitle{\GenericFunctionEmpty}
 
 Now, we're ready to write our first generic function. Recall the |Generic| class
@@ -462,11 +425,8 @@ A generic function is an instance of |Generic|. To write a function, we need to
 produce a type for the instance.
 
 \end{frame}
-
 %-------------------------------------------------------------------------------
-
 \begin{frame}
-
 \frametitle{\GenericFunctionEmpty}
 
 The function we're going to write is called |EmptyT|. It returns the value of a
@@ -485,11 +445,8 @@ final function. For |EmptyT|, the type is identical (modulo class constraints),
 but for some functions (such as |CrushT| that we see next), it can change.
 
 \end{frame}
-
 %-------------------------------------------------------------------------------
-
 \begin{frame}
-
 \frametitle{\GenericFunctionEmpty}
 
 The function definition is straightforward.
@@ -511,11 +468,8 @@ instance Generic EmptyT where
 \end{code}
 
 \end{frame}
-
 %-------------------------------------------------------------------------------
-
 \begin{frame}
-
 \frametitle{\GenericFunctionEmpty}
 
 The ``core'' generic function is |selEmpty :: EmptyT aa -> aa|, but we wrap it
@@ -542,11 +496,8 @@ it demonstrates the basics of defining a generic function.
 Let's move on to a more complicated function that is also much more useful.
 
 \end{frame}
-
 %-------------------------------------------------------------------------------
-
 \begin{frame}
-
 \frametitle{\GenericFunctionCrush}
 
 The generic function |CrushT| is sometimes called a generalization of the list
@@ -574,11 +525,8 @@ foldr :: (aa -> bb -> bb) -> bb -> [aa] -> bb
 \end{spec}
 
 \end{frame}
-
 %-------------------------------------------------------------------------------
-
 \begin{frame}
-
 \frametitle{\GenericFunctionCrush}
 
 \setlength\belowdisplayskip{0pt}
@@ -608,11 +556,8 @@ Let's see how to deal with these.
 \newcounter{countCrushIssue}
 
 \end{frame}
-
 %-------------------------------------------------------------------------------
-
 \begin{frame}
-
 \frametitle{\GenericFunctionCrush}
 
 \setlength\belowdisplayskip{0pt}
@@ -636,11 +581,8 @@ generic type variable is |ff|. Variables |aa| and |bb| are polymorphic.
 Fortunately, the change is not large.
 
 \end{frame}
-
 %-------------------------------------------------------------------------------
-
 \begin{frame}
-
 \frametitle{\GenericFunctionCrush}
 
 We need a type class representation dispatcher for functor types.
@@ -669,20 +611,137 @@ instance (Generic gg) => FRep gg Tree where
 Again, this is generated code, and we don't have to write it.
 
 \end{frame}
-
 %-------------------------------------------------------------------------------
-
 \begin{frame}
-
 \frametitle{\GenericFunctionCrush}
 
+Now, back to defining the |newtype| for our function.
+
+\setlength\belowdisplayskip{0pt}
+\begin{spec}
+? :: (dots) => (aa -> bb -> bb) -> bb -> ff aa -> bb
+\end{spec}
+
+We need to determine the core functionality and choose the most general type.
+Here, the core generic functionality is to combine a value from a structure
+representation with a non-generic value and return a non-generic result. This is
+effectively the higher-order argument.
+
+\setlength\belowdisplayskip{0pt}
 \begin{code}
-newtype CrushT bb aa = Crush { crushRight' :: aa -> bb -> bb }
+newtype CrushT bb aa = Crush { selCrush :: aa -> bb -> bb }
+\end{code}
+
+We must be careful, however, to avoid thinking that this is the exact same as
+the combining function. We are indicating two important aspects with this
+declaration:
+
+\begin{enumerate}
+\item Type of the ``core'' generic function: type of |selCrush|
+\item Which types are generic: type parameters of |CrushT|
+\end{enumerate}
+
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{\GenericFunctionCrush}
+
+Next, we define the function cases themselves.
+
+\setlength\belowdisplayskip{0pt}
+\begin{code}
+instance Generic (CrushT bb) where
+\end{code}
+
+The constant types (include |UnitT|) are simple. The constructor case is almost
+as simple. The |rtype| case adds the conversion from the datatype.
+
+\setlength\belowdisplayskip{0pt}
+\begin{code}
+  rconstant         = Crush (const id)
+  rcon   cd         = Crush . selCrush
+  rtype  td  ep ra  = Crush (selCrush ra . from ep)
+\end{code}
+
+The sum case is somewhat more interesting.
+
+\setlength\belowdisplayskip{0pt}
+\begin{code}
+  rsum ra rb = Crush go
+    where  go (L a)  = selCrush ra a
+           go (R b)  = selCrush rb b
 \end{code}
 
 \end{frame}
-
 %-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{\GenericFunctionCrush}
 
+The product case is even more interesting.
+
+\setlength\belowdisplayskip{0pt}
+\begin{code}
+  rprod ra rb = Crush go
+    where  go (a ::*:: b) = selCrush ra a . selCrush rb b
+\end{code}
+
+Or should it be...?
+
+\setlength\belowdisplayskip{0pt}
+\begin{spec}
+  rprod ra rb = Crush go
+    where  go (a ::*:: b) = selCrush rb b . selCrush ra a
+\end{spec}
+
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{\GenericFunctionCrush}
+
+Fortunately, we can turn this problem into a choice.
+
+\setlength\belowdisplayskip{0pt}
+\begin{code}
+data Assoc  =  AssocLeft
+            |  AssocRight
+
+newtype CrushT2 bb aa = Crush2 { selCrush2 :: Assoc -> aa -> bb -> bb }
+\end{code}
+
+Then, we modify the product case (and others) with an associativity argument.
+
+\setlength\belowdisplayskip{0pt}
+\begin{code}
+instance Generic (CrushT2 bb) where
+  dots
+  rprod ra rb = Crush2 go
+    where
+      go s@AssocLeft   (a ::*:: b)  = selCrush2 rb s b . selCrush2 ra s a
+      go s@AssocRight  (a ::*:: b)  = selCrush2 ra s a . selCrush2 rb s b
+  dots
+\end{code}
+%if style == newcode
+\begin{code}
+  rconstant         = Crush2 (\_ _ -> id)
+  rcon   cd         = Crush2 . selCrush2
+  rtype  td  ep ra  = Crush2 (\s -> selCrush2 ra s . from ep)
+  rsum ra rb = Crush2 go
+    where  go s (L a)  = selCrush2 ra s a
+           go s (R b)  = selCrush2 rb s b
+\end{code}
+%endif
+
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{\GenericFunctionCrush}
+
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{\GenericFunctionCrush}
+
+\end{frame}
+%-------------------------------------------------------------------------------
 \end{document}
 

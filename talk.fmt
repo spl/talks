@@ -55,7 +55,7 @@
 %if style == newcode
 %format dots                    =  " "
 %else
-%format dots                    =  "..."
+%format dots                    =  "\dots"
 %endif
 
 % Vertical space
@@ -80,6 +80,7 @@
 %format ==                      =  "\doubleequals "
 %format /=                      =  "\not\doubleequals "
 %format #                       = "\star"
+%format .                       = "\cdot"
 
 % Standard Haskell types
 %format Int                     =  "\Typ{Int}"
@@ -153,5 +154,9 @@
 
 %format CrushT                  = "\Typ{Crush}"
 %format Crush                   = "\Con{Crush}"
+%format Assoc                   = "\Typ{Assoc}"
+%format CrushT2                 = "\Typ{Crush}"
+%format Crush2                  = "\Con{Crush}"
+%format selCrush2               = "\Con{selCrush}"
 
 %endif
