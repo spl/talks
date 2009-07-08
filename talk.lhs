@@ -27,6 +27,9 @@
 \newcounter{countGenericFunctionEmpty}
 \newcommand{\GenericFunctionEmpty}{\CountingTitle{First Generic Function: Empty}{countGenericFunctionEmpty}}
 
+\newcounter{countGenericFunctionCrush}
+\newcommand{\GenericFunctionCrush}{\CountingTitle{Defining Crush}{countGenericFunctionCrush}}
+
 %-------------------------------------------------------------------------------
 % Formatting
 
@@ -371,11 +374,11 @@ class Rep gg aa where
   rep :: gg aa
 
 instance (Generic gg, Rep gg aa) => Rep gg (Tree aa) where
-  rep =  rtype  (TypeDescr dots)
-                epTree
-                (  rcon (ConDescr dots)  runit  `rsum`
-                   rcon (ConDescr dots)  rep    `rsum`
-                   rcon (ConDescr dots)  (rep `rprod` rep `rprod` rep))
+  rep =
+    rtype  (TypeDescr dots) epTree
+           (  rcon (ConDescr dots)  runit  `rsum`
+              rcon (ConDescr dots)  rep    `rsum`
+              rcon (ConDescr dots)  (rep `rprod` rep `rprod` rep))
 \end{code}
 
 Of course, we also need instances for the constant types.
@@ -524,6 +527,8 @@ empty :: (Rep EmptyT aa) => aa
 empty = selEmpty rep
 \end{code}
 
+The primary purpose of |Rep| is to dispatch the appropriate type representation.
+
 Applying |empty|:
 
 \setlength\belowdisplayskip{0pt}
@@ -535,6 +540,145 @@ test1 = (empty :: Tree Int) == Tip
 it demonstrates the basics of defining a generic function.
 
 Let's move on to a more complicated function that is also much more useful.
+
+\end{frame}
+
+%-------------------------------------------------------------------------------
+
+\begin{frame}
+
+\frametitle{\GenericFunctionCrush}
+
+The generic function |CrushT| is sometimes called a generalization of the list
+``fold'' operations --- but so is a catamorphism. It is also sometimes called
+``reduce'' --- not exactly a precise description. To avoid confusion, let's not
+do any of these things and just focus on how it works.
+
+|CrushT| operates on the elements of a container or functor type. It traverses
+all of the elements and accumulates a result that combines them in some way. In
+order to do this, |CrushT| requires a nullary value to initialize the
+accumulator and a binary operation to combine an element with the accumulator.
+
+We will define a function with a type signature similar to this:
+
+\setlength\belowdisplayskip{0pt}
+\begin{spec}
+? :: (dots) => (aa -> bb -> bb) -> bb -> ff aa -> bb
+\end{spec}
+
+Notice the similarity:
+
+\setlength\belowdisplayskip{0pt}
+\begin{spec}
+foldr :: (aa -> bb -> bb) -> bb -> [aa] -> bb
+\end{spec}
+
+\end{frame}
+
+%-------------------------------------------------------------------------------
+
+\begin{frame}
+
+\frametitle{\GenericFunctionCrush}
+
+\setlength\belowdisplayskip{0pt}
+\begin{spec}
+? :: (dots) => (aa -> bb -> bb) -> bb -> ff aa -> bb
+\end{spec}
+
+Our first challenge is to define the |newtype| for the function. Recall that
+this gives a strong indication of the type of the function, but that it doesn't
+necessarily match the final type exactly. Let's try to determine that type.
+
+We have several major differences between the requirements for |EmptyT| and
+those for |CrushT|.
+
+\begin{enumerate}
+
+\item |CrushT| takes arguments.
+
+\item |CrushT| has three type variables over |EmptyT|'s one.
+
+\item |CrushT| deals with a functor type (i.e. |ff :: # -> #|).
+
+\end{enumerate}
+
+Let's see how to deal with these.
+
+\newcounter{countCrushIssue}
+
+\end{frame}
+
+%-------------------------------------------------------------------------------
+
+\begin{frame}
+
+\frametitle{\GenericFunctionCrush}
+
+\setlength\belowdisplayskip{0pt}
+\begin{spec}
+? :: (dots) => (aa -> bb -> bb) -> bb -> ff aa -> bb
+\end{spec}
+
+\showc{countCrushIssue}. \b{|CrushT| takes arguments.} This is not difficult to
+handle. Our generic function cases can take arguments, too.
+
+\showc{countCrushIssue}. \b{|CrushT| has three type variables over |EmptyT|'s
+one.} When defining a generic function in EMGM, it is important to determine
+which types are actually ``generic'' (i.e. will need a structure representation)
+and which types are not (e.g. may be polymorphic).
+
+In this case, we traverse only the structure of the container, so the only truly
+generic type variable is |ff|. Variables |aa| and |bb| are polymorphic.
+
+\showc{countCrushIssue}. \b{|CrushT| deals with a functor type (i.e. |ff :: # ->
+#|).} Unfortunately, our current representation does not handle this.
+Fortunately, the change is not large.
+
+\end{frame}
+
+%-------------------------------------------------------------------------------
+
+\begin{frame}
+
+\frametitle{\GenericFunctionCrush}
+
+We need a type class representation dispatcher for functor types.
+
+\setlength\belowdisplayskip{0pt}
+\begin{code}
+class FRep gg ff where
+  frep :: gg aa -> gg (ff aa)
+\end{code}
+
+|FRep| allows us to represent the structure of a functor type while also giving
+us access to the element type contained within.
+
+Reusing our |Tree| example:
+
+\setlength\belowdisplayskip{0pt}
+\begin{code}
+instance (Generic gg) => FRep gg Tree where
+  frep ra =
+    rtype  (TypeDescr dots) epTree
+           (  rcon (ConDescr dots)  runit  `rsum`
+              rcon (ConDescr dots)  ra     `rsum`
+              rcon (ConDescr dots)  (rint `rprod` frep ra `rprod` frep ra))
+\end{code}
+
+Again, this is generated code, and we don't have to write it.
+
+\end{frame}
+
+%-------------------------------------------------------------------------------
+
+\begin{frame}
+
+\frametitle{\GenericFunctionCrush}
+
+\begin{code}
+newtype CrushT bb aa = Crush { crushRight' :: aa -> bb -> bb }
+\end{code}
 
 \end{frame}
 

@@ -79,6 +79,7 @@
 %format not                     =  "\Var{not}"
 %format ==                      =  "\doubleequals "
 %format /=                      =  "\not\doubleequals "
+%format #                       = "\star"
 
 % Standard Haskell types
 %format Int                     =  "\Typ{Int}"
