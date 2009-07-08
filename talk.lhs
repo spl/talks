@@ -24,11 +24,14 @@
 \newcounter{countRepresentingStructure}
 \newcommand{\RepresentingStructure}{\CountingTitle{Representing Structure in EMGM}{countRepresentingStructure}}
 
-\newcounter{countGenericFunctionEmpty}
-\newcommand{\GenericFunctionEmpty}{\CountingTitle{First Generic Function: Empty}{countGenericFunctionEmpty}}
+\newcounter{countDefiningEmpty}
+\newcommand{\DefiningEmpty}{\CountingTitle{First Generic Function: Empty}{countDefiningEmpty}}
 
-\newcounter{countGenericFunctionCrush}
-\newcommand{\GenericFunctionCrush}{\CountingTitle{Defining Crush}{countGenericFunctionCrush}}
+\newcounter{countDefiningCrush}
+\newcommand{\DefiningCrush}{\CountingTitle{Defining Crush}{countDefiningCrush}}
+
+\newcounter{countUsingCrush}
+\newcommand{\UsingCrush}{\CountingTitle{Using Crush}{countUsingCrush}}
 
 %-------------------------------------------------------------------------------
 % Formatting
@@ -50,8 +53,13 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 module Talk where
+import Prelude hiding (sum, any)
 
-test = test1
+test =  test1
+     && test2
+     && test3
+     && test4
+     && test5
 \end{code}
 %endif
 
@@ -386,7 +394,7 @@ pragma or command-line option in GHC to see the code generated at compile time:
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{\GenericFunctionEmpty}
+\frametitle{\DefiningEmpty}
 
 Now, we're ready to write our first generic function. Recall the |Generic| class
 (in full).
@@ -427,7 +435,7 @@ produce a type for the instance.
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{\GenericFunctionEmpty}
+\frametitle{\DefiningEmpty}
 
 The function we're going to write is called |EmptyT|. It returns the value of a
 type that is traditionally the initial value if you were to enumerate all
@@ -447,7 +455,7 @@ but for some functions (such as |CrushT| that we see next), it can change.
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{\GenericFunctionEmpty}
+\frametitle{\DefiningEmpty}
 
 The function definition is straightforward.
 
@@ -470,7 +478,7 @@ instance Generic EmptyT where
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{\GenericFunctionEmpty}
+\frametitle{\DefiningEmpty}
 
 The ``core'' generic function is |selEmpty :: EmptyT aa -> aa|, but we wrap it
 with a more usable function:
@@ -498,7 +506,7 @@ Let's move on to a more complicated function that is also much more useful.
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{\GenericFunctionCrush}
+\frametitle{\DefiningCrush}
 
 The generic function |CrushT| is sometimes called a generalization of the list
 ``fold'' operations --- but so is a catamorphism. It is also sometimes called
@@ -527,7 +535,7 @@ foldr :: (aa -> bb -> bb) -> bb -> [aa] -> bb
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{\GenericFunctionCrush}
+\frametitle{\DefiningCrush}
 
 \setlength\belowdisplayskip{0pt}
 \begin{spec}
@@ -558,7 +566,7 @@ Let's see how to deal with these.
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{\GenericFunctionCrush}
+\frametitle{\DefiningCrush}
 
 \setlength\belowdisplayskip{0pt}
 \begin{spec}
@@ -583,7 +591,7 @@ Fortunately, the change is not large.
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{\GenericFunctionCrush}
+\frametitle{\DefiningCrush}
 
 We need a type class representation dispatcher for functor types.
 
@@ -613,7 +621,7 @@ Again, this is generated code, and we don't have to write it.
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{\GenericFunctionCrush}
+\frametitle{\DefiningCrush}
 
 Now, back to defining the |newtype| for our function.
 
@@ -644,7 +652,7 @@ declaration:
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{\GenericFunctionCrush}
+\frametitle{\DefiningCrush}
 
 Next, we define the function cases themselves.
 
@@ -675,7 +683,7 @@ The sum case is somewhat more interesting.
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{\GenericFunctionCrush}
+\frametitle{\DefiningCrush}
 
 The product case is even more interesting.
 
@@ -696,7 +704,7 @@ Or should it be...?
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{\GenericFunctionCrush}
+\frametitle{\DefiningCrush}
 
 Fortunately, we can turn this problem into a choice.
 
@@ -734,12 +742,168 @@ instance Generic (CrushT2 bb) where
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{\GenericFunctionCrush}
+\frametitle{\DefiningCrush}
+
+We have defined the ``core'' generic function, so now we can define our
+user-friendly wrapper.
+
+\setlength\belowdisplayskip{0pt}
+\begin{spec}
+crush :: (dots) => Assoc -> (aa -> bb -> bb) -> bb -> ff aa -> bb
+\end{spec}
+
+Let's first review the definitions we've collected.
+
+\setlength\belowdisplayskip{0pt}
+\begin{spec}
+Crush2     :: (Assoc -> aa -> bb -> bb) -> CrushT2 bb aa
+
+frep       :: (FRep gg ff) => gg aa -> gg (ff aa)
+
+selCrush2  :: CrushT2 bb aa -> Assoc -> aa -> bb -> bb
+\end{spec}
+
+Notice any patterns?
 
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{\GenericFunctionCrush}
+\frametitle{\DefiningCrush}
+
+First, we need a higher-order combining function.
+
+\setlength\belowdisplayskip{0pt}
+\begin{spec}
+Crush2 :: (Assoc -> aa -> bb -> bb) -> CrushT2 bb aa
+\end{spec}
+
+Next, we need to transform the generic type parameter |aa| to a functional kind
+using the new representation dispatcher.
+
+\setlength\belowdisplayskip{0pt}
+\begin{spec}
+frep :: (FRep gg ff) => gg aa -> gg (ff aa)
+
+frep . Crush2 ::  (FRep (CrushT2 bb) ff) =>
+                  (Assoc -> aa -> bb -> bb) -> CrushT2 bb (ff aa)
+\end{spec}
+
+Then, we open the |CrushT2| value to get the generic function.
+
+\setlength\belowdisplayskip{0pt}
+\begin{spec}
+selCrush2  :: CrushT2 bb aa -> Assoc -> aa -> bb -> bb
+
+selCrush2 . frep . Crush2
+  ::  (FRep (CrushT2 bb) ff) =>
+      (Assoc -> aa -> bb -> bb) -> Assoc -> ff aa -> bb -> bb
+\end{spec}
+
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{\DefiningCrush}
+
+Finally, with a little massaging, we can define |crush|.
+
+\setlength\belowdisplayskip{0pt}
+\begin{code}
+crush ::  (FRep (CrushT2 bb) ff) =>
+          Assoc -> (aa -> bb -> bb) -> bb -> ff aa -> bb
+crush s f z x = selCrush2 (frep (Crush2 (const f))) s x z
+\end{code}
+
+And we can define more wrappers that imply the associativity.
+
+\setlength\belowdisplayskip{0pt}
+\begin{code}
+crushl, crushr ::  (FRep (CrushT2 bb) ff) =>
+                   (aa -> bb -> bb) -> bb -> ff aa -> bb
+crushl = crush AssocLeft
+
+crushr = crush AssocRight
+\end{code}
+
+That's it for the generic function definition, but what's the point? What can we
+do with |CrushT2|?
+
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{\UsingCrush}
+
+Due to its genericity, |CrushT2| is a very powerful and practical function. We
+can build a large number of functions using |crush|.
+
+\begin{itemize}
+\item Flatten a container to a list of its elements:
+\end{itemize}
+
+\setlength\belowdisplayskip{0pt}
+\begin{code}
+flattenr :: (FRep (CrushT2 [a]) f) => f a -> [a]
+flattenr = crushr (:) []
+
+test2 =  flattenr (Node 2 (Leaf "Hi") (Leaf "London"))
+         == ["Hi","London"]
+\end{code}
+
+\begin{itemize}
+\item Or extract the reversed list:
+\end{itemize}
+
+\setlength\belowdisplayskip{0pt}
+\begin{code}
+flattenl :: (FRep (CrushT2 [a]) f) => f a -> [a]
+flattenl = crushl (:) []
+
+test3 =  flattenl (Node 2009 (Leaf 7) (Leaf 9))
+         == [9,7]
+\end{code}
+
+Notice the use of associativity.
+
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{\UsingCrush}
+
+\begin{itemize}
+\item Sum the (numerical) elements of a container:
+\end{itemize}
+
+\setlength\belowdisplayskip{0pt}
+\begin{code}
+sum :: (Num a, FRep (CrushT2 a) f) => f a -> a
+sum = crushr (+) 0
+
+test4 = sum (Node 4 (Leaf 40) (Leaf 2)) == 42
+\end{code}
+
+\begin{itemize}
+\item Or determine if any element satisfies a predicate:
+\end{itemize}
+
+\setlength\belowdisplayskip{0pt}
+\begin{code}
+any :: (FRep (CrushT2 Bool) f) => (a -> Bool) -> f a -> Bool
+any p = crushr (\x b -> b || p x) False
+
+test5 = any (>2) (Node 5 (Leaf 0) (Leaf 1)) == False
+\end{code}
+
+The |CrushT2| function and its derivatives are all available in the \pkg{emgm}
+package.
+
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{???}
+
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{???}
 
 \end{frame}
 %-------------------------------------------------------------------------------
