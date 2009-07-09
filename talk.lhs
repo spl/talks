@@ -98,16 +98,17 @@ test ===  test1
 \begin{frame}
 \frametitle{Extensible and Modular Generics for the Masses}
 
-A powerful Haskell library that uses type classes with multiple parameters and
-overlapping and undecidable instances to form a highly flexible foundation for
-\b{datatype-generic programming} (\b{DGP}).
+EMGM is a powerful library that uses type classes for \b{datatype-generic
+programming} (\b{DGP}) in Haskell.
 
 \onslide<2->
 The \b{\pkg{emgm}} package on Hackage provides the following:
 
 \begin{itemize}
 \item Documented platform for writing generic functions
+\onslide<3->
 \item Flexible functionality for deriving instances using Template Haskell
+\onslide<4->
 \item Growing collection of useful generic functions
 \end{itemize}
 
@@ -120,18 +121,21 @@ The \b{\pkg{emgm}} package on Hackage provides the following:
 
 \item Published as \b{Generics for the Masses} by Ralf Hinze in 2004.
 
+\onslide<2->
 \item Revised by Bruno Oliveira, Andres Löh, and Hinze for extensibility and
 modularity in 2006.
 
+\onslide<3->
 \item Explored further and compared with other DGP libraries by Alexey Rodriguez
 Yakushev et al in 2007-2008.
 
+\onslide<4->
 \item Packaged and released by Sean Leather, Jos\'{e} Pedro Magalh\~{a}es, and
 others at Utrecht University in September 2008.
 
 \end{enumerate}
 
-\onslide<2->
+\onslide<5->
 A tutorial is available as part of lecture notes created for the 2008 Advanced
 Functional Programming Summer School.
 
@@ -168,8 +172,8 @@ Functional Programming Summer School.
 
 \begin{itemize}
 
-\item The term was coined by Jeremy Gibbons in ????, but the technique has been
-around since at least ????.
+\item The term was coined by Jeremy Gibbons several years ago, but the technique
+has been around for around a decade.
 
 \onslide<2->
 \item Scrap Your Boilerplate (SYB) is an example of a popular DGP library.
@@ -232,7 +236,7 @@ type TreeS' aa === UnitS + aa + Int * Tree aa * Tree aa
 \end{spec}
 
 \onslide<2->
-Another way of looking at |TreeS'| using standard Haskell types is
+Another way of defining |TreeS'| is using standard Haskell types.
 
 \bs
 \begin{code}
@@ -245,7 +249,7 @@ type TreeS' aa === Either UnitTuple (Either aa (Int, (Tree aa, Tree aa)))
 \frametitle{\RepresentingStructure}
 
 While we might use standard Haskell types, we choose to use our own types for
-readability and to prevent confusion between datatypes used in the
+better readability and to prevent confusion between datatypes used in the
 representation and those that are represented.
 
 \onslide<2->
@@ -254,15 +258,12 @@ representation and those that are represented.
 data UnitT      === Unit          -- ()
 
 data aa :*: bb  === aa ::*:: bb   -- (a, b)
-infixr 6 :*:
 
 data aa :+: bb  === L aa | R bb   -- Either a b
-infixr 5 :+:
-
-type TreeS aa === UnitT :+: aa :+: Int :*: Tree aa :*: Tree aa
 \end{code}
 %if style == newcode
 \begin{code}
+infixr 5 :+:
 infixr 6 ::*::
 deriving instance Enum UnitT
 deriving instance Eq UnitT
@@ -281,8 +282,15 @@ deriving instance (Show aa, Show bb) => Show (aa :*: bb)
 %endif
 
 \onslide<3->
-We also want to keep around meta-information about the constructors and the
-types.
+This is the structure we use for EMGM.
+
+\bs
+\begin{code}
+type TreeS aa === UnitT :+: aa :+: Int :*: Tree aa :*: Tree aa
+\end{code}
+
+\onslide<4->
+We will also need descriptions of the constructors and types.
 
 \bs
 \begin{code}
@@ -313,7 +321,7 @@ In order to access the structure of a datatype, we need to translate a value
 from its native form to a representation form.
 
 \onslide<2->
-This is done using a \b{isomorphism} implemented as an \b{embedding-projection
+This is done using an \b{isomorphism} implemented as an \b{embedding-projection
 pair}.
 
 \bs
@@ -379,6 +387,7 @@ rTree = rtype  (TypeDescr dots) epTree
                   rcon (ConDescr dots)  (rep `rprod` rep `rprod` rep))
 \end{code}
 
+\onslide<2->
 But what is this |Rep| and |rep| about?
 
 \end{frame}
@@ -430,7 +439,7 @@ package.
 $(derive ''Tree)
 \end{spec}
 
-This creates the |EPT|, the |ConDescrT|, the |TypeDescrT|, and all class
+This creates the |EPT|, the |ConDescrT| and |TypeDescrT|, and all class
 instances needed.
 
 \onslide<3->
@@ -504,7 +513,7 @@ newtype EmptyT aa === Empty { selEmpty :: aa }
 \onslide<2->
 Note that the type of |selEmpty| gives a strong indication of the type of the
 final function. For |EmptyT|, the type is identical (modulo class constraints),
-but for some functions (such as |CrushT| that we see next), it can change.
+but for some functions, it can change.
 
 \end{frame}
 %-------------------------------------------------------------------------------
@@ -571,9 +580,11 @@ Let's move on to a more complicated function that is also much more useful.
 \item The generic function |CrushT| is sometimes called a generalization of the
 list ``fold'' operations --- but so is a catamorphism.
 
+\onslide<2->
 \item It is also sometimes called ``reduce'' --- not exactly a precise
 description.
 
+\onslide<3->
 \item To avoid confusion, let's not do any of these things and just focus on how
 it works.
 
@@ -588,15 +599,17 @@ it works.
 
 \item |CrushT| operates on the elements of a container or functor type.
 
+\onslide<2->
 \item It traverses all of the elements and accumulates a result that combines
 them in some way.
 
+\onslide<3->
 \item In order to do this, |CrushT| requires a nullary value to initialize the
 accumulator and a binary operation to combine an element with the accumulator.
 
 \end{itemize}
 
-\onslide<2->
+\onslide<4->
 We will define a function with a type signature similar to this:
 
 \bs
@@ -604,7 +617,7 @@ We will define a function with a type signature similar to this:
 crush :: (dots) => (aa -> bb -> bb) -> bb -> ff aa -> bb
 \end{spec}
 
-\onslide<3->
+\onslide<5->
 Notice the similarity:
 
 \bs
@@ -1078,7 +1091,7 @@ on a simple ad hoc instance for each type to match the collected value with the
 result value.
 
 \onslide<3->
-The |newtype| is:
+The function signature is:
 
 \bs
 \begin{code}
@@ -1195,7 +1208,7 @@ test8 === collect val1 == [88 :: Int]
 
 \onslide<2->
 ... as long as you remember that the result type must be non-polymorphic and
-non-ambiguous.
+unambiguous.
 
 \onslide<3->
 \bs
@@ -1253,6 +1266,9 @@ using \pkg{emgm}.
 All roads to more information start at the homepage.
 
 \url{http://www.cs.uu.nl/wiki/GenericProgramming/EMGM}
+
+\onslide<2->
+(I hope you don't hit the London traffic on your way there.)
 
 \end{frame}
 %-------------------------------------------------------------------------------
