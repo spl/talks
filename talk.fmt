@@ -21,14 +21,11 @@
 
 %if style /= newcode
 
-\renewcommand\Varid[1]{\mathord{\textsf{#1}}}
-\let\Conid\Varid
+\renewcommand\Varid[1]{\color{Var}\mathord{\textsf{#1}}}
+\renewcommand\Conid[1]{\color{Var}\mathord{\textsf{#1}}}
 
-\newcommand\Con[1]{{\color{Con}\Conid{#1}}}
-\newcommand\Typ[1]{{\color{Typ}\Conid{#1}}}
-\newcommand\Var[1]{{\color{Var}\Varid{#1}}}
+\newcommand\Typ[1]{{\color{Typ}\mathord{\textsf{#1}}}}
 \newcommand\Key[1]{{\color{Key}\textsf{\textbf{#1}}}}
-\newcommand\Module[1]{{\color{Module}\Conid{#1}}}
 
 \newcommand\struct[1]{#1^{\circ}}
 
@@ -39,11 +36,9 @@
 
 %if style /= newcode
 
-\colorlet{Typ}{red!50!black}
-\colorlet{Con}{black}
+\colorlet{Typ}{green!50!black}
 \colorlet{Var}{black}
-\colorlet{Key}{orange!90!black}
-\colorlet{Module}{red!50!blue}
+\colorlet{Key}{red!50!black}
 
 %endif
 
@@ -72,13 +67,30 @@
 %format UnitTuple               =  "\Typ{()}"
 %endif
 
+% Bind
+%if style == newcode
+%format ===                     = "="
+%else
+%format ===                     = "\mathbin{\Key{=}}"
+%endif
+
 %if style /= newcode
 
+% Haskell keywords
+%format data                    = "\Key{data}"
+%format type                    = "\Key{type}"
+%format newtype                 = "\Key{newtype}"
+%format let                     = "\Key{let}"
+%format where                   = "\Key{where}"
+%format infix                   = "\Key{infix}"
+%format infixr                  = "\Key{infixr}"
+%format infixl                  = "\Key{infixl}"
+%format class                   = "\Key{class}"
+%format instance                = "\Key{instance}"
+
 % Standard Haskell symbols
-%format undefined               =  "\Var{undefined}"
-%format not                     =  "\Var{not}"
-%format ==                      =  "\doubleequals "
-%format /=                      =  "\not\doubleequals "
+%format ==                      = "\doubleequals "
+%format /=                      = "\not\doubleequals "
 %format #                       = "\star"
 %format .                       = "\cdot"
 
@@ -125,44 +137,32 @@
 % EMGM symbols
 %format :+:                     = "\mathbin{\color{Typ}\vcentcolon\kern-0.4em+\kern-0.4em\vcentcolon}"
 %format :*:                     = "\mathbin{\color{Typ}\vcentcolon\kern-0.4em*\kern-0.4em\vcentcolon}"
-%format ::*::                   = "\mathbin{\color{Con}\vcentcolon\kern-0.4em*\kern-0.4em\vcentcolon}"
+%format ::*::                   = "\mathbin{\color{Var}\vcentcolon\kern-0.4em*\kern-0.4em\vcentcolon}"
 
 % EMGM types
 %format UnitT                   = "\Typ{Unit}"
-%format Unit                    = "\Con{Unit}"
-%format L                       = "\Con{L}"
-%format R                       = "\Con{R}"
 %format EPT                     = "\Typ{EP}"
-%format EP                      = "\Con{EP}"
 %format ConDescrT               = "\Typ{ConDescr}"
-%format ConDescr                = "\Con{ConDescr}"
 %format TypeDescrT              = "\Typ{TypeDescr}"
-%format TypeDescr               = "\Con{TypeDescr}"
 
 % Tree
 %format Tree                    = "\Typ{Tree}"
-%format Tip                     = "\Con{Tip}"
-%format Leaf                    = "\Con{Leaf}"
-%format Bin                     = "\Con{Bin}"
 %format TreeS                   = "\struct{" Tree "}"
 %format TreeS'                  = TreeS
 
 %format EmptyT                  = "\Typ{Empty}"
-%format Empty                   = "\Con{Empty}"
 
 %format EnumT                   = "\Typ{Enum}"
 
 %format CrushT                  = "\Typ{Crush}"
-%format Crush                   = "\Con{Crush}"
 %format Assoc                   = "\Typ{Assoc}"
 %format CrushT2                 = "\Typ{Crush}"
-%format Crush2                  = "\Con{Crush}"
-%format selCrush2               = "\Con{selCrush}"
+%format Crush2                  = Crush
+%format selCrush2               = selCrush
 
 %format ReadT                   = "\Typ{Read}"
 %format ShowT                   = "\Typ{Show}"
 
 %format CollectT                = "\Typ{Collect}"
-%format Collect                 = "\Con{Collect}"
 
 %endif
