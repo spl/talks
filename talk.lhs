@@ -25,13 +25,16 @@
 \newcommand{\RepresentingStructure}{\CountingTitle{Representing Structure in EMGM}{countRepresentingStructure}}
 
 \newcounter{countDefiningEmpty}
-\newcommand{\DefiningEmpty}{\CountingTitle{First Generic Function: Empty}{countDefiningEmpty}}
+\newcommand{\DefiningEmpty}{\CountingTitle{Defining Empty}{countDefiningEmpty}}
 
 \newcounter{countDefiningCrush}
 \newcommand{\DefiningCrush}{\CountingTitle{Defining Crush}{countDefiningCrush}}
 
 \newcounter{countUsingCrush}
 \newcommand{\UsingCrush}{\CountingTitle{Using Crush}{countUsingCrush}}
+
+\newcounter{countAdhocInstances}
+\newcommand{\AdhocInstances}{\CountingTitle{Ad Hoc Instances}{countAdhocInstances}}
 
 %-------------------------------------------------------------------------------
 % Formatting
@@ -52,6 +55,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE OverlappingInstances #-}
 module Talk where
 import Prelude hiding (sum, any)
 
@@ -60,6 +64,7 @@ test =  test1
      && test3
      && test4
      && test5
+     && test6
 \end{code}
 %endif
 
@@ -143,7 +148,7 @@ http://...
 \item Using Generic Functions
 
 \begin{itemize}
-\item Ad-hoc Instances
+\item Ad hoc Instances
 \item Map, ZipWith
 \end{itemize}
 
@@ -365,6 +370,11 @@ Of course, we also need instances for the constant types.
 instance (Generic gg) => Rep gg Int where rep = rint
 dots
 \end{code}
+%if style == newcode
+\begin{code}
+instance (Generic gg) => Rep gg Char where rep = rchar
+\end{code}
+%endif
 
 \end{frame}
 %-------------------------------------------------------------------------------
@@ -394,7 +404,7 @@ pragma or command-line option in GHC to see the code generated at compile time:
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{\DefiningEmpty}
+\frametitle{First Generic Function: \DefiningEmpty}
 
 Now, we're ready to write our first generic function. Recall the |Generic| class
 (in full).
@@ -506,7 +516,7 @@ Let's move on to a more complicated function that is also much more useful.
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{\DefiningCrush}
+\frametitle{In Over Our Heads: \DefiningCrush}
 
 The generic function |CrushT| is sometimes called a generalization of the list
 ``fold'' operations --- but so is a catamorphism. It is also sometimes called
@@ -857,8 +867,7 @@ test2 =  flattenr (Node 2 (Leaf "Hi") (Leaf "London"))
 flattenl :: (FRep (CrushT2 [a]) f) => f a -> [a]
 flattenl = crushl (:) []
 
-test3 =  flattenl (Node 2009 (Leaf 7) (Leaf 9))
-         == [9,7]
+test3 =  flattenl (Node 2009 (Leaf 7) (Leaf 9)) == [9,7]
 \end{code}
 
 Notice the use of associativity.
@@ -892,18 +901,61 @@ any p = crushr (\x b -> b || p x) False
 test5 = any (>2) (Node 5 (Leaf 0) (Leaf 1)) == False
 \end{code}
 
-The |CrushT2| function and its derivatives are all available in the \pkg{emgm}
-package.
+The |CrushT2| function and its many derivatives are all available in the
+\pkg{emgm} package.
 
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{???}
+\frametitle{Diversion: \AdhocInstances}
+
+Let's deviate from defining generic functions for a bit and explore why EMGM is
+extensible and modular. The reason is that we can override how a generic
+function works for any datatype. The mechanism is called an \b{ad hoc instance}.
+
+Suppose we want to change the ``empty'' value for |Tree Char|. The generic
+value, as we have seen, is |Tip|. We then write an ad hoc instance:
+
+\setlength\belowdisplayskip{0pt}
+\begin{code}
+instance Rep EmptyT (Tree Char) where
+  rep = Empty (Leaf empty)
+
+test6 = empty == Leaf '\NUL'
+\end{code}
+
+The instance specifies the function signature, |EmptyT|, and the type for the
+instance, |Tree Char|.
 
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{???}
+\frametitle{\AdhocInstances}
+
+The example of |EmptyT| is simple to understand, but it does not do justice to
+the flexibility that ad hoc instances provide. Functions such as the |ReadT| and
+|ShowT| are very suitable for ad hoc instances. Indeed, the \pkg{emgm} package
+uses them to support the special syntax for lists and tuples.
+
+\setlength\belowdisplayskip{0pt}
+\begin{spec}
+instance (Rep ReadT a) => Rep ReadT [a] where
+  rep = ReadT $ const $ list $ readPrec
+>-<
+instance (Rep ShowT a, Rep ShowT b) => Rep ShowT (a,b) where
+  rep = ShowT s
+    where s _ _ (a,b) = showTuple [shows a, shows b]
+\end{spec}
+
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Returning from Diversion}
+
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Last Frame}
 
 \end{frame}
 %-------------------------------------------------------------------------------

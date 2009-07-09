@@ -159,4 +159,7 @@
 %format Crush2                  = "\Con{Crush}"
 %format selCrush2               = "\Con{selCrush}"
 
+%format ReadT                   = "\Typ{Read}"
+%format ShowT                   = "\Typ{Show}"
+
 %endif
