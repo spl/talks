@@ -7,6 +7,12 @@
 \usepackage{talk}
 
 %-------------------------------------------------------------------------------
+% Formatting
+
+% Global formatting directives
+%include talk.fmt
+
+%-------------------------------------------------------------------------------
 % Commands
 
 % Step the counter parameter by 1 and print the result
@@ -36,11 +42,8 @@
 \newcounter{countAdhocInstances}
 \newcommand{\AdhocInstances}{\CountingTitle{Ad Hoc Instances}{countAdhocInstances}}
 
-%-------------------------------------------------------------------------------
-% Formatting
-
-% Global formatting directives
-%include talk.fmt
+\newcounter{countDefiningCollect}
+\newcommand{\DefiningCollect}{\CountingTitle{Defining Collect}{countDefiningCollect}}
 
 %-------------------------------------------------------------------------------
 
@@ -56,6 +59,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE OverlappingInstances #-}
+{-# LANGUAGE UndecidableInstances #-}
 module Talk where
 import Prelude hiding (sum, any)
 
@@ -65,6 +69,10 @@ test =  test1
      && test4
      && test5
      && test6
+     && test7
+     && test8
+     && test9
+     && test10
 \end{code}
 %endif
 
@@ -355,7 +363,8 @@ another type class, |Rep|.
 class Rep gg aa where
   rep :: gg aa
 
-instance (Generic gg, Rep gg aa) => Rep gg (Tree aa) where
+instance  (Generic gg, Rep gg aa, Rep gg Int, Rep gg (Tree aa)) =>
+          Rep gg (Tree aa) where
   rep =
     rtype  (TypeDescr dots) epTree
            (  rcon (ConDescr dots)  runit  `rsum`
@@ -914,7 +923,7 @@ extensible and modular. The reason is that we can override how a generic
 function works for any datatype. The mechanism is called an \b{ad hoc instance}.
 
 Suppose we want to change the ``empty'' value for |Tree Char|. The generic
-value, as we have seen, is |Tip|. We then write an ad hoc instance:
+result, as we have seen, is |Tip|, but we want something different.
 
 \setlength\belowdisplayskip{0pt}
 \begin{code}
@@ -926,6 +935,13 @@ test6 = empty == Leaf '\NUL'
 
 The instance specifies the function signature, |EmptyT|, and the type for the
 instance, |Tree Char|.
+
+Note that you must have overlapping instances enabled for ad hoc instances:
+
+\setlength\belowdisplayskip{0pt}
+\begin{spec}
+{-# LANGUAGE OverlappingInstances #-}
+\end{spec}
 
 \end{frame}
 %-------------------------------------------------------------------------------
@@ -939,10 +955,10 @@ uses them to support the special syntax for lists and tuples.
 
 \setlength\belowdisplayskip{0pt}
 \begin{spec}
-instance (Rep ReadT a) => Rep ReadT [a] where
+instance (Rep ReadT aa) => Rep ReadT [aa] where
   rep = ReadT $ const $ list $ readPrec
 >-<
-instance (Rep ShowT a, Rep ShowT b) => Rep ShowT (a,b) where
+instance (Rep ShowT aa, Rep ShowT bb) => Rep ShowT (aa,bb) where
   rep = ShowT s
     where s _ _ (a,b) = showTuple [shows a, shows b]
 \end{spec}
@@ -950,7 +966,170 @@ instance (Rep ShowT a, Rep ShowT b) => Rep ShowT (a,b) where
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{Returning from Diversion}
+\frametitle{Return from Diversion: \DefiningCollect}
+
+The last function we will define is also a useful one and takes full advantage
+of ad hoc instances. The purpose of |CollectT| is to gather all (top-level)
+values of a certain type from a value of a (different) type and return them in a
+list. |CollectT| relies on a simple ad hoc instance for each type to match the
+collected value with the result value.
+
+The |newtype| is:
+
+\setlength\belowdisplayskip{0pt}
+\begin{code}
+newtype CollectT bb aa = Collect { selCollect :: aa -> [bb] }
+\end{code}
+
+Thus, |aa| represents the generic collected type, and |bb| represents the
+non-generic result type.
+
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{\DefiningCollect}
+
+Now, onto the definition.
+
+As with |CrushT|, the constant types (including |UnitT|) and the cases for
+constructors and types are quite straightforward.
+
+\setlength\belowdisplayskip{0pt}
+\begin{code}
+instance Generic (CollectT b) where
+  rconstant            = Collect (const [])
+  rcon   cd      ra    = Collect (selCollect ra)
+  rtype  td  ep  ra    = Collect (selCollect ra . from ep)
+\end{code}
+
+The key to keep in mind with this generic function is that the structural
+induction simply recurses throughout the value. It is the ad hoc instances that
+do the important work.
+
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{\DefiningCollect}
+
+The sum case recursively dives into the indicated alternative.
+
+\setlength\belowdisplayskip{0pt}
+\begin{code}
+  rsum ra rb = Collect go
+    where  go (L a)  = selCollect ra a
+           go (R b)  = selCollect rb b
+\end{code}
+
+The product case appends the collected results of one component to those of the
+other.
+
+\setlength\belowdisplayskip{0pt}
+\begin{code}
+  rprod ra rb = Collect go
+    where  go (a ::*:: b) = selCollect ra a ++ selCollect rb b
+\end{code}
+
+The wrapper itself is quite simple.
+
+\setlength\belowdisplayskip{0pt}
+\begin{code}
+collect :: (Rep (CollectT bb) aa) => aa -> [bb]
+collect = selCollect rep
+\end{code}
+
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{\DefiningCollect}
+
+So, what about the ad hoc instances? Here is an example:
+
+\setlength\belowdisplayskip{0pt}
+\begin{code}
+instance Rep (CollectT Int) Int where
+  rep = Collect (:[])
+\end{code}
+%if style == newcode
+\begin{code}
+instance Rep (CollectT Char) Char where
+  rep = Collect (:[])
+\end{code}
+%endif
+
+And here's another:
+
+\setlength\belowdisplayskip{0pt}
+\begin{code}
+-- instance (Rep (CollectT aa) aa) => Rep (CollectT (Tree aa)) (Tree aa) where
+instance Rep (CollectT (Tree aa)) (Tree aa) where
+  rep = Collect (:[])
+\end{code}
+
+(And guess what? This is generated by |$(derive ''Tree)|!)
+
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Using Collect}
+
+The function |collect| is easy to use...
+
+\setlength\belowdisplayskip{0pt}
+\begin{code}
+val1 = Node 88 (Leaf 'a') (Leaf 'b')
+
+test7 =  collect val1 == "ab"
+
+test8 = collect val1 == [88 :: Int]
+\end{code}
+
+... as long as you remember that the result type must be non-polymorphic and
+non-ambiguous.
+
+\setlength\belowdisplayskip{0pt}
+\begin{code}
+val2 :: Tree Int
+val2 = (Node 1 (Node 2 (Leaf 3) (Leaf 4)) (Leaf 5))
+
+test9 =  collect val2 == [1,2,3,4,5 :: Int]
+
+test10 =  collect val2 == [val2]
+\end{code}
+
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Looking at \pkg{emgm}}
+
+We have discussed how to write several generic functions. If you set off to
+implement your own, you should have a good idea of where to start.
+
+If you instead want to simply use the available generic functions in the
+\pkg{emgm} package, you should look at the Haddock docs:
+
+\url{http://hackage.haskell.org/package/emgm/}
+
+(Yes, look at it now...)
+
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Continuing Development of EMGM}
+
+EMGM is continuing to evolve. We have plans for a number of new functions or
+packages.
+
+\begin{itemize}
+\item |transpose :: f (g a) -> g (f a)|
+\item Map with first-class generic higher-order function
+\item Encoding/decoding
+\item Supporting \pkg{binary}, \pkg{bytestring}, \pkg{HDBC}
+\end{itemize}
+
+We would also be happy to take bug reports, contributions, or see other packages
+using \pkg{emgm}. Contact us on the Generics mailing list.
+
+\url{http://www.haskell.org/mailman/listinfo/generics}
 
 \end{frame}
 %-------------------------------------------------------------------------------
