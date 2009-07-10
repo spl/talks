@@ -264,6 +264,7 @@ data aa :+: bb  === L aa | R bb   -- Either a b
 %if style == newcode
 \begin{code}
 infixr 5 :+:
+infixr 6 :*:
 infixr 6 ::*::
 deriving instance Enum UnitT
 deriving instance Eq UnitT
