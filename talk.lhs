@@ -101,14 +101,14 @@ test ===  test1
 EMGM is a powerful library that uses type classes for \b{datatype-generic
 programming} (\b{DGP}) in Haskell.
 
-\onslide<2->
+%\onslide<2->
 The \b{\pkg{emgm}} package on Hackage provides the following:
 
 \begin{itemize}
 \item Documented platform for writing generic functions
-\onslide<3->
+%\onslide<3->
 \item Flexible functionality for deriving instances using Template Haskell
-\onslide<4->
+%\onslide<4->
 \item Growing collection of useful generic functions
 \end{itemize}
 
@@ -121,21 +121,21 @@ The \b{\pkg{emgm}} package on Hackage provides the following:
 
 \item Published as \b{Generics for the Masses} by Ralf Hinze in 2004.
 
-\onslide<2->
+%\onslide<2->
 \item Revised by Bruno Oliveira, Andres Löh, and Hinze for extensibility and
 modularity in 2006.
 
-\onslide<3->
+%\onslide<3->
 \item Explored further and compared with other DGP libraries by Alexey Rodriguez
 Yakushev et al in 2007-2008.
 
-\onslide<4->
+%\onslide<4->
 \item Packaged and released by Sean Leather, Jos\'{e} Pedro Magalh\~{a}es, and
 others at Utrecht University in September 2008.
 
 \end{enumerate}
 
-\onslide<5->
+%\onslide<5->
 A tutorial is available as part of lecture notes created for the 2008 Advanced
 Functional Programming Summer School.
 
@@ -175,10 +175,10 @@ Functional Programming Summer School.
 \item The term was coined by Jeremy Gibbons several years ago, but the technique
 has been around for around a decade.
 
-\onslide<2->
+%\onslide<2->
 \item Scrap Your Boilerplate (SYB) is an example of a popular DGP library.
 
-\onslide<3->
+%\onslide<3->
 \item DGP means generic on the \b{structure of a datatype}.
 
 \end{itemize}
@@ -193,7 +193,7 @@ has been around for around a decade.
 \item The structure is a way of representing the common aspects of many
 datatypes, e.g. constructors, alternatives, tupling.
 
-\onslide<2->
+%\onslide<2->
 \item An intuitive way to determine the structure of a datatype is to look at
 its declaration.
 
@@ -210,7 +210,7 @@ deriving instance (Show aa) => Show (Tree aa)
 \end{code}
 %endif
 
-\onslide<3->
+%\onslide<3->
 \begin{itemize}
 \item There are multiple \b{generic views} of the structure.
 \item SYB uses one based on combinators.
@@ -235,7 +235,7 @@ syntax with (nested) sums (alternatives) and products (pairs).
 type TreeS' aa === UnitS + aa + Int * Tree aa * Tree aa
 \end{spec}
 
-\onslide<2->
+%\onslide<2->
 Another way of defining |TreeS'| is using standard Haskell types.
 
 \bs
@@ -252,7 +252,7 @@ While we might use standard Haskell types, we choose to use our own types for
 better readability and to prevent confusion between datatypes used in the
 representation and those that are represented.
 
-\onslide<2->
+%\onslide<2->
 \bs
 \begin{code}
 data UnitT      === Unit          -- ()
@@ -281,7 +281,7 @@ deriving instance (Show aa, Show bb) => Show (aa :*: bb)
 \end{code}
 %endif
 
-\onslide<3->
+%\onslide<3->
 This is the structure we use for EMGM.
 
 \bs
@@ -289,7 +289,7 @@ This is the structure we use for EMGM.
 type TreeS aa === UnitT :+: aa :+: Int :*: Tree aa :*: Tree aa
 \end{code}
 
-\onslide<4->
+%\onslide<4->
 We will also need descriptions of the constructors and types.
 
 \bs
@@ -320,7 +320,7 @@ deriving instance Show TypeDescrT
 In order to access the structure of a datatype, we need to translate a value
 from its native form to a representation form.
 
-\onslide<2->
+%\onslide<2->
 This is done using an \b{isomorphism} implemented as an \b{embedding-projection
 pair}.
 
@@ -329,7 +329,7 @@ pair}.
 data EPT dd rr === EP { from :: (dd -> rr), to :: (rr -> dd) }
 \end{code}
 
-\onslide<3->
+%\onslide<3->
 Here is the |EPT| for |Tree|.
 
 \begin{code}
@@ -354,7 +354,7 @@ A generic function is written by induction on the structure of a datatype. We
 represent the cases of a function as methods of this (summarized) type class
 |Generic|.
 
-\onslide<2->
+%\onslide<2->
 \bs
 \begin{spec}
 class Generic gg where
@@ -367,7 +367,7 @@ class Generic gg where
   rtype      :: TypeDescrT -> EPT bb aa -> gg aa -> gg bb
 \end{spec}
 
-\onslide<3->
+%\onslide<3->
 Our \b{universe} supports constant types, structure types, and the ability to
 extend the universe with arbitrary datatypes using |rtype|.
 
@@ -387,7 +387,7 @@ rTree = rtype  (TypeDescr dots) epTree
                   rcon (ConDescr dots)  (rep `rprod` rep `rprod` rep))
 \end{code}
 
-\onslide<2->
+%\onslide<2->
 But what is this |Rep| and |rep| about?
 
 \end{frame}
@@ -408,7 +408,7 @@ instance  (Generic gg, Rep gg aa, Rep gg Int, Rep gg (Tree aa)) =>
   rep = rTree
 \end{code}
 
-\onslide<2->
+%\onslide<2->
 Of course, we also need instances for the constant types.
 
 \bs
@@ -433,7 +433,7 @@ Fortunately, we don't have to write all of the previous boilerplate. We can
 generate it using the Template Haskell functions included in the \pkg{emgm}
 package.
 
-\onslide<2->
+%\onslide<2->
 \bs
 \begin{spec}
 $(derive ''Tree)
@@ -442,7 +442,7 @@ $(derive ''Tree)
 This creates the |EPT|, the |ConDescrT| and |TypeDescrT|, and all class
 instances needed.
 
-\onslide<3->
+%\onslide<3->
 It is a good idea to understand what code is being derived. Use the following
 pragma or command-line option in GHC to see the code generated at compile time:
 
@@ -489,7 +489,7 @@ infixr 5 `rsum`
 \end{code}
 %endif
 
-\onslide<2->
+%\onslide<2->
 A generic function is an instance of |Generic|. To write a function, we need to
 produce a type for the instance.
 
@@ -502,7 +502,7 @@ The simple function we're going to write is called |EmptyT|. It returns the
 value of a type that is traditionally the initial value if you were to enumerate
 all values. (|EnumT| is included in \pkg{emgm}.)
 
-\onslide<2->
+%\onslide<2->
 The type of the function is enclosed in a |newtype|.
 
 \bs
@@ -510,7 +510,7 @@ The type of the function is enclosed in a |newtype|.
 newtype EmptyT aa === Empty { selEmpty :: aa }
 \end{code}
 
-\onslide<2->
+%\onslide<2->
 Note that the type of |selEmpty| gives a strong indication of the type of the
 final function. For |EmptyT|, the type is identical (modulo class constraints),
 but for some functions, it can change.
@@ -552,10 +552,10 @@ empty :: (Rep EmptyT aa) => aa
 empty === selEmpty rep
 \end{code}
 
-\onslide<2->
+%\onslide<2->
 The primary purpose of |Rep| is to dispatch the appropriate type representation.
 
-\onslide<3->
+%\onslide<3->
 Applying |empty|:
 
 \bs
@@ -563,11 +563,11 @@ Applying |empty|:
 test1 === (empty :: Tree Int) == Tip
 \end{code}
 
-\onslide<4->
+%\onslide<4->
 |EmptyT| has a very simple definition, and it may not be extremely useful, but
 it demonstrates the basics of defining a generic function.
 
-\onslide<5->
+%\onslide<5->
 Let's move on to a more complicated function that is also much more useful.
 
 \end{frame}
@@ -580,11 +580,11 @@ Let's move on to a more complicated function that is also much more useful.
 \item The generic function |CrushT| is sometimes called a generalization of the
 list ``fold'' operations --- but so is a catamorphism.
 
-\onslide<2->
+%\onslide<2->
 \item It is also sometimes called ``reduce'' --- not exactly a precise
 description.
 
-\onslide<3->
+%\onslide<3->
 \item To avoid confusion, let's not do any of these things and just focus on how
 it works.
 
@@ -599,17 +599,17 @@ it works.
 
 \item |CrushT| operates on the elements of a container or functor type.
 
-\onslide<2->
+%\onslide<2->
 \item It traverses all of the elements and accumulates a result that combines
 them in some way.
 
-\onslide<3->
+%\onslide<3->
 \item In order to do this, |CrushT| requires a nullary value to initialize the
 accumulator and a binary operation to combine an element with the accumulator.
 
 \end{itemize}
 
-\onslide<4->
+%\onslide<4->
 We will define a function with a type signature similar to this:
 
 \bs
@@ -617,7 +617,7 @@ We will define a function with a type signature similar to this:
 crush :: (dots) => (aa -> bb -> bb) -> bb -> ff aa -> bb
 \end{spec}
 
-\onslide<5->
+%\onslide<5->
 Notice the similarity:
 
 \bs
@@ -639,7 +639,7 @@ Our first challenge is to define the |newtype| for the function. Recall that
 this gives a strong indication of the type of the function, but that it doesn't
 necessarily match the final type exactly. Let's try to determine that type.
 
-\onslide<2->
+%\onslide<2->
 We have several major differences between the requirements for |EmptyT| and
 those for |CrushT|.
 
@@ -653,7 +653,7 @@ those for |CrushT|.
 
 \end{enumerate}
 
-\onslide<3->
+%\onslide<3->
 Let's see how to deal with these.
 
 \end{frame}
@@ -669,7 +669,7 @@ crush :: (dots) => (aa -> bb -> bb) -> bb -> ff aa -> bb
 1. \b{|CrushT| takes arguments.} This is not difficult to
 handle. Our generic function cases can take arguments, too.
 
-\onslide<2->
+%\onslide<2->
 2. \b{|CrushT| has three type variables over |EmptyT|'s
 one.} When defining a generic function in EMGM, it is important to determine
 which types are actually ``generic'' (i.e. will need a structure representation)
@@ -678,7 +678,7 @@ and which types are not (e.g. may be polymorphic).
 In this case, we traverse only the structure of the container, so the only truly
 generic type variable is |ff|. Variables |aa| and |bb| are polymorphic.
 
-\onslide<3->
+%\onslide<3->
 2. \b{|CrushT| deals with a functor type (i.e. |ff :: # ->
 #|).} Unfortunately, our current representation does not handle this.
 Fortunately, the change is not large.
@@ -696,11 +696,11 @@ class FRep gg ff where
   frep :: gg aa -> gg (ff aa)
 \end{code}
 
-\onslide<2->
+%\onslide<2->
 |FRep| allows us to represent the structure of a functor type while also giving
 us access to the element type contained within.
 
-\onslide<3->
+%\onslide<3->
 Reusing our |Tree| example:
 
 \bs
@@ -713,7 +713,7 @@ instance (Generic gg) => FRep gg Tree where
               rcon (ConDescr dots)  (rint `rprod` frep ra `rprod` frep ra))
 \end{code}
 
-\onslide<4->
+%\onslide<4->
 Again, this is generated code, and we don't have to write it.
 
 \end{frame}
@@ -730,23 +730,23 @@ crush :: (dots) => (aa -> bb -> bb) -> bb -> ff aa -> bb
 
 \begin{itemize}
 
-\onslide<2->
+%\onslide<2->
 \item We need to determine the core functionality and choose the most general type.
 
-\onslide<3->
+%\onslide<3->
 \item The core generic functionality is to combine a value from a structure
 representation with a non-generic value and return a non-generic result. This is
 effectively the higher-order argument.
 
 \end{itemize}
 
-\onslide<4->
+%\onslide<4->
 \bs
 \begin{code}
 newtype CrushT bb aa === Crush { selCrush :: aa -> bb -> bb }
 \end{code}
 
-\onslide<5->
+%\onslide<5->
 We must be careful, however, to avoid thinking that this is the exact same as
 the combining function. We are indicating two important aspects with this
 declaration:
@@ -768,7 +768,7 @@ Next, we define the function cases themselves.
 instance Generic (CrushT bb) where
 \end{code}
 
-\onslide<2->
+%\onslide<2->
 The constant types (including |UnitT|) are simple. The constructor case is
 almost as simple. The |rtype| case adds the conversion from the datatype.
 
@@ -779,7 +779,7 @@ almost as simple. The |rtype| case adds the conversion from the datatype.
   rtype  td  ep ra  === Crush (selCrush ra . from ep)
 \end{code}
 
-\onslide<3->
+%\onslide<3->
 The sum case is somewhat more interesting.
 
 \bs
@@ -802,7 +802,7 @@ The product case is even more interesting.
     where  go (a ::*:: b) === selCrush ra a . selCrush rb b
 \end{code}
 
-\onslide<2->
+%\onslide<2->
 Or should it be...?
 
 \bs
@@ -826,7 +826,7 @@ data Assoc  ===  AssocLeft
 newtype CrushT2 bb aa === Crush2 { selCrush2 :: Assoc -> aa -> bb -> bb }
 \end{code}
 
-\onslide<2->
+%\onslide<2->
 Then, we modify the product case (and others) with an associativity argument.
 
 \bs
@@ -863,7 +863,7 @@ user-friendly wrapper.
 crush :: (dots) => Assoc -> (aa -> bb -> bb) -> bb -> ff aa -> bb
 \end{spec}
 
-\onslide<2->
+%\onslide<2->
 Let's first review the definitions we've collected.
 
 \bs
@@ -875,7 +875,7 @@ frep       :: (FRep gg ff) => gg aa -> gg (ff aa)
 selCrush2  :: CrushT2 bb aa -> Assoc -> aa -> bb -> bb
 \end{spec}
 
-\onslide<3->
+%\onslide<3->
 Notice any patterns?
 
 \end{frame}
@@ -890,7 +890,7 @@ First, we need a higher-order combining function.
 Crush2 :: (Assoc -> aa -> bb -> bb) -> CrushT2 bb aa
 \end{spec}
 
-\onslide<2->
+%\onslide<2->
 Next, we need to transform the generic type parameter |aa| to a functional kind
 using the new representation dispatcher.
 
@@ -902,7 +902,7 @@ frep . Crush2 ::  (FRep (CrushT2 bb) ff) =>
                   (Assoc -> aa -> bb -> bb) -> CrushT2 bb (ff aa)
 \end{spec}
 
-\onslide<3->
+%\onslide<3->
 Then, we open the |CrushT2| value to get the generic function.
 
 \bs
@@ -928,7 +928,7 @@ crush ::  (FRep (CrushT2 bb) ff) =>
 crush s f z x === selCrush2 (frep (Crush2 (const f))) s x z
 \end{code}
 
-\onslide<2->
+%\onslide<2->
 And we can define more wrappers that imply the associativity.
 
 \bs
@@ -940,7 +940,7 @@ crushl === crush AssocLeft
 crushr === crush AssocRight
 \end{code}
 
-\onslide<3->
+%\onslide<3->
 That's it for the generic function definition, but what's the point? What can we
 do with |CrushT2|?
 
@@ -952,7 +952,7 @@ do with |CrushT2|?
 Due to its genericity, |CrushT2| is a powerful and practical function. We can
 build a large number of functions using |crush|.
 
-\onslide<2->
+%\onslide<2->
 \begin{itemize}
 \item Flatten a container to a list of its elements:
 \end{itemize}
@@ -966,7 +966,7 @@ test2 ===  flattenr (Node 2 (Leaf "Hi") (Leaf "London"))
          == ["Hi","London"]
 \end{code}
 
-\onslide<3->
+%\onslide<3->
 \begin{itemize}
 \item Or extract the reversed list:
 \end{itemize}
@@ -979,7 +979,7 @@ flattenl === crushl (:) []
 test3 ===  flattenl (Node 2009 (Leaf 7) (Leaf 9)) == [9,7]
 \end{code}
 
-\onslide<4->
+%\onslide<4->
 Notice the use of associativity.
 
 \end{frame}
@@ -999,7 +999,7 @@ sum === crushr (+) 0
 test4 === sum (Node 4 (Leaf 40) (Leaf 2)) == 42
 \end{code}
 
-\onslide<2->
+%\onslide<2->
 \begin{itemize}
 \item Or determine if any element satisfies a predicate:
 \end{itemize}
@@ -1012,7 +1012,7 @@ any p === crushr (\x b -> b || p x) False
 test5 === any (>2) (Node 5 (Leaf 0) (Leaf 1)) == False
 \end{code}
 
-\onslide<3->
+%\onslide<3->
 The |CrushT2| function and its many derivatives are all available in the
 \pkg{emgm} package.
 
@@ -1025,11 +1025,11 @@ Let's deviate from defining generic functions for a bit and explore why EMGM is
 extensible and modular. The reason is that we can override how a generic
 function works for any datatype. The mechanism is called an \b{ad hoc instance}.
 
-\onslide<2->
+%\onslide<2->
 Suppose we want to change the ``empty'' value for |Tree Char|. The generic
 result, as we have seen, is |Tip|, but we want something different.
 
-\onslide<3->
+%\onslide<3->
 \bs
 \begin{code}
 instance Rep EmptyT (Tree Char) where
@@ -1041,7 +1041,7 @@ test6 === empty == Leaf '\NUL'
 The instance specifies the function signature, |EmptyT|, and the type for the
 instance, |Tree Char|.
 
-\onslide<4->
+%\onslide<4->
 Note that you must have overlapping instances enabled for ad hoc instances:
 
 \bs
@@ -1061,14 +1061,14 @@ Functions such as the |ReadT| and |ShowT| are very suitable for ad hoc
 instances. Indeed, the \pkg{emgm} package uses them to support the special
 syntax for lists and tuples.
 
-\onslide<2->
+%\onslide<2->
 \bs
 \begin{spec}
 instance (Rep ReadT aa) => Rep ReadT [aa] where
   rep === ReadT $ const $ list $ readPrec
 \end{spec}
 
-\onslide<3->
+%\onslide<3->
 \bs
 \begin{spec}
 instance (Rep ShowT aa, Rep ShowT bb) => Rep ShowT (aa,bb) where
@@ -1084,13 +1084,13 @@ instance (Rep ShowT aa, Rep ShowT bb) => Rep ShowT (aa,bb) where
 The last function we will define is also a useful one and takes full advantage
 of ad hoc instances.
 
-\onslide<2->
+%\onslide<2->
  The purpose of |CollectT| is to gather all (top-level) values of a certain type
 from a value of a (different) type and return them in a list. |CollectT| relies
 on a simple ad hoc instance for each type to match the collected value with the
 result value.
 
-\onslide<3->
+%\onslide<3->
 The function signature is:
 
 \bs
@@ -1098,7 +1098,7 @@ The function signature is:
 newtype CollectT bb aa === Collect { selCollect :: aa -> [bb] }
 \end{code}
 
-\onslide<4->
+%\onslide<4->
 The type parameter |aa| represents the generic collected type, and |bb|
 represents the non-generic result type.
 
@@ -1109,7 +1109,7 @@ represents the non-generic result type.
 
 Now, onto the definition.
 
-\onslide<2->
+%\onslide<2->
 As with |CrushT|, the constant types (including |UnitT|) and the cases for
 constructors and types are quite straightforward.
 
@@ -1121,7 +1121,7 @@ instance Generic (CollectT b) where
   rtype  td  ep  ra    === Collect (selCollect ra . from ep)
 \end{code}
 
-\onslide<3->
+%\onslide<3->
 The key to keep in mind with this generic function is that the structural
 induction simply recurses throughout the value. It is the ad hoc instances that
 do the important work.
@@ -1140,7 +1140,7 @@ The sum case recursively dives into the indicated alternative.
            go (R b)  === selCollect rb b
 \end{code}
 
-\onslide<2->
+%\onslide<2->
 The product case appends the collected results of one component to those of the
 other.
 
@@ -1150,7 +1150,7 @@ other.
     where  go (a ::*:: b) === selCollect ra a ++ selCollect rb b
 \end{code}
 
-\onslide<3->
+%\onslide<3->
 The wrapper itself is quite simple.
 
 \bs
@@ -1178,7 +1178,7 @@ instance Rep (CollectT Char) Char where
 \end{code}
 %endif
 
-\onslide<2->
+%\onslide<2->
 And here's another:
 
 \bs
@@ -1187,7 +1187,7 @@ instance Rep (CollectT (Tree aa)) (Tree aa) where
   rep === Collect (:[])
 \end{code}
 
-\onslide<3->
+%\onslide<3->
 (And guess what? This is generated by |$(derive ''Tree)|!)
 
 \end{frame}
@@ -1206,11 +1206,11 @@ test7 ===  collect val1 == "ab"
 test8 === collect val1 == [88 :: Int]
 \end{code}
 
-\onslide<2->
+%\onslide<2->
 ... as long as you remember that the result type must be non-polymorphic and
 unambiguous.
 
-\onslide<3->
+%\onslide<3->
 \bs
 \begin{code}
 val2 :: Tree Int
@@ -1229,13 +1229,13 @@ test10 ===  collect val2 == [val2]
 We have discussed how to write several generic functions. If you set off to
 implement your own, you should have a good idea of where to start.
 
-\onslide<2->
+%\onslide<2->
 If you instead want to simply use the available generic functions in the
 \pkg{emgm} package, you should look at the Haddock docs:
 
 \url{http://hackage.haskell.org/package/emgm/}
 
-\onslide<3->
+%\onslide<3->
 (Yes, look at it now...)
 
 \end{frame}
@@ -1247,11 +1247,11 @@ EMGM is continuing to evolve. We have plans for a number of new functions or
 packages.
 
 \begin{itemize}
-\onslide<2->
+%\onslide<2->
 \item |transpose :: f (g a) -> g (f a)|
-\onslide<3->
+%\onslide<3->
 \item Map with first-class higher-order generic function
-\onslide<4->
+%\onslide<4->
 \item Supporting \pkg{binary}, \pkg{bytestring}, \pkg{HDBC}
 \end{itemize}
 
@@ -1267,7 +1267,7 @@ All roads to more information start at the homepage.
 
 \url{http://www.cs.uu.nl/wiki/GenericProgramming/EMGM}
 
-\onslide<2->
+%\onslide<2->
 (I hope you don't hit the London traffic on your way there.)
 
 \end{frame}
