@@ -1,0 +1,166 @@
+%include polycode.fmt
+%include spacing.fmt
+
+%-------------------------------------------------------------------------------
+% Definitions
+%
+
+%if style /= newcode
+
+% Due to Jeremy Gibbons:
+\def\doubleequals{\mathrel{\unitlength 0.01em
+  \begin{picture}(78,40)
+    \put(7,34){\line(1,0){25}} \put(45,34){\line(1,0){25}}
+    \put(7,14){\line(1,0){25}} \put(45,14){\line(1,0){25}}
+  \end{picture}}}
+
+%endif
+
+%-------------------------------------------------------------------------------
+% Commands
+
+%if style /= newcode
+
+\renewcommand\Varid[1]{\color{Var}\mathord{\textsf{#1}}}
+\renewcommand\Conid[1]{\color{Var}\mathord{\textsf{#1}}}
+
+\newcommand\Var[1]{{\Varid{#1}}}
+\newcommand\Typ[1]{{\color{Typ}\mathord{\textsf{#1}}}}
+\newcommand\Key[1]{{\color{Key}\textsf{\textbf{#1}}}}
+
+\newcommand\struct[1]{#1^{\circ}}
+
+%endif
+
+%-------------------------------------------------------------------------------
+% Colors
+
+%if style /= newcode
+
+\colorlet{Typ}{green!50!black}
+\colorlet{Var}{black}
+\colorlet{Key}{red!50!black}
+
+%endif
+
+%-------------------------------------------------------------------------------
+% Formats
+%
+
+% Ignoring
+%if style == newcode
+%format dots                    =  " "
+%else
+%format dots                    =  "\dots"
+%endif
+
+% Vertical space
+%if style == newcode
+%format >-<                     =
+%else
+%format >-<                     =  "\vspace{-1pt} "
+%endif
+
+% Unit
+%if style == newcode
+%format UnitTuple               =  "()"
+%else
+%format UnitTuple               =  "\Typ{()}"
+%endif
+
+% Bind
+%if style == newcode
+%format ===                     = "="
+%else
+%format ===                     = "\mathbin{\Key{=}}"
+%endif
+
+%if style /= newcode
+
+% Haskell keywords
+%format data                    = "\Key{data}"
+%format type                    = "\Key{type}"
+%format newtype                 = "\Key{newtype}"
+%format let                     = "\Key{let}"
+%format where                   = "\Key{where}"
+%format infix                   = "\Key{infix}"
+%format infixr                  = "\Key{infixr}"
+%format infixl                  = "\Key{infixl}"
+%format class                   = "\Key{class}"
+%format instance                = "\Key{instance}"
+
+% Standard Haskell symbols
+%format ==                      = "\doubleequals "
+%format /=                      = "\not\doubleequals "
+%format #                       = "\star"
+%format .                       = "\cdot"
+
+% Standard Haskell types
+%format Int                     =  "\Typ{Int}"
+%format Integer                 =  "\Typ{Integer}"
+%format Float                   =  "\Typ{Float}"
+%format Double                  =  "\Typ{Double}"
+%format Char                    =  "\Typ{Char}"
+%format Either                  =  "\Typ{Either}"
+%format Maybe                   =  "\Typ{Maybe}"
+%format String                  =  "\Typ{String}"
+%format ShowS                   =  "\Typ{ShowS}"
+%format ReadS                   =  "\Typ{ReadS}"
+%format ReadP                   =  "\Typ{ReadP}"
+
+% Typ variables
+%format aa                      =  "\Typ{a}"
+%format bb                      =  "\Typ{b}"
+%format cc                      =  "\Typ{c}"
+%format dd                      =  "\Typ{d}"
+%format ee                      =  "\Typ{e}"
+%format ff                      =  "\Typ{f}"
+%format gg                      =  "\Typ{g}"
+%format hh                      =  "\Typ{h}"
+%format ii                      =  "\Typ{i}"
+%format jj                      =  "\Typ{j}"
+%format kk                      =  "\Typ{k}"
+%format ll                      =  "\Typ{l}"
+%format mm                      =  "\Typ{m}"
+%format nn                      =  "\Typ{n}"
+%format oo                      =  "\Typ{o}"
+%format pp                      =  "\Typ{p}"
+%format qq                      =  "\Typ{q}"
+%format rr                      =  "\Typ{r}"
+%format ss                      =  "\Typ{s}"
+%format tt                      =  "\Typ{t}"
+%format uu                      =  "\Typ{u}"
+%format vv                      =  "\Typ{v}"
+%format ww                      =  "\Typ{w}"
+%format xx                      =  "\Typ{x}"
+%format yy                      =  "\Typ{y}"
+%format zz                      =  "\Typ{z}"
+
+%format dd1                     =  "\Typ{d1}"
+%format dd2                     =  "\Typ{d2}"
+%format ff1                     =  "\Typ{f1}"
+%format ff2                     =  "\Typ{f2}"
+
+%format int                     =  "\Typ{int}"
+%format const                   =  "\Typ{const}"
+%format char                    =  "\Typ{char}"
+
+%format Text.Printf             = "\Var{Text.Printf}"
+%format Text.XFormat.Show       = "\Var{Text.XFormat.Show}"
+%format Text.XFormat.Read       = "\Var{Text.XFormat.Read}"
+
+%format Id                      =  "\Typ{Id}"
+%format Idd                     =  "\Var{Id}"
+%format Arr                     =  "\Typ{Arr}"
+%format Arrr                    =  "\Var{Arr}"
+%format :.:                     =  "\mathbin{\Typ{:.:}}"
+%format :%:                     =  "\mathbin{\Typ{:\%:}}"
+%format ::%::                   =  "\mathbin{\Var{:\%:}}"
+
+%format StringF                 =  "\Typ{StringF}"
+%format String'                 =  "\Var{String}"
+%format NumF                    =  "\Typ{NumF}"
+%format R                       =  "\Typ{R}"
+%format F                       =  "\Typ{F}"
+
+%endif

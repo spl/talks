@@ -1,0 +1,52 @@
+
+\ProvidesPackage{talk}
+
+%-------------------------------------------------------------------------------
+% Packages
+
+% Allow for UTF-8 characters in text. With this, you can type ü instead of \"u.
+\usepackage[utf8]{inputenc}
+
+% Support languages with English as the default
+\usepackage[english]{babel}
+
+% Sync input and PDF output
+\usepackage{pdfsync}
+
+% Publication quality tables
+\usepackage{booktabs}
+
+% Support links with \url{}
+\usepackage{hyperref} 
+
+% Graphics
+\usepackage{tikz} 
+
+% Absolute text box positioning
+\usepackage[absolute,overlay]{textpos}
+
+% Math fonts
+\usepackage{dsfont} % Double-stroke
+\usepackage{sfmath} % Sans-serif
+%\usepackage{mathpazo} % Pazo
+%\usepackage{amsmath}
+
+% For \ventcolon
+\usepackage{mathtools}
+
+%-------------------------------------------------------------------------------
+% Fonts, Spacing
+
+\usefonttheme{serif} % Font theme: serif
+\setlength{\parskip}{6pt} % Spacing between paragraphs
+
+%-------------------------------------------------------------------------------
+% beamer package configuration
+
+\setbeamercovered{transparent}
+\setbeamertemplate{blocks}[rounded][shadow=true] 
+\beamerboxesdeclarecolorscheme{goodpopup}{lightgrey}{white}
+
+\setbeamertemplate{navigation symbols}{}
+\setbeamerfont{title}{size=\Large}
+
