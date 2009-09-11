@@ -176,7 +176,7 @@ we have the same problems as we do with |printf|.
 \frametitle{Simple functions with big problems}
 
 The functions |printf| and |scanf| are extremely handy, but they should be
-considered ``unsafe.''
+considered ``unsafe'' and difficult to change.
 
 \onslide<2->
 The problems:
@@ -270,6 +270,7 @@ showf :: (Format dd ff, Apply ff String aa) => dd -> aa
 
 readf :: (Format dd aa) => dd -> String -> Maybe aa
 \end{spec}
+\onslide<2->
 Now, we can write
 {\small
 \begin{verbatim}
@@ -293,7 +294,7 @@ But the typechecker prevents us from writing
 \end{verbatim}
 }
 \onslide<2->
-or
+and
 {\small
 \begin{verbatim}
 > putStr $ showf (String % " W" % Num % "rld!\n") "Hello" 
@@ -315,19 +316,19 @@ Does \pkg{xformat} handle our problems?
 \begin{itemize}
 
 \onslide<2->
-\item No validation of the argument types
+\item Validation of the argument types?
 \begin{itemize}
 \item Yes, the typechecker does this.
 \end{itemize}
 
 \onslide<3->
-\item No validation of the arity
+\item Validation of the arity?
 \begin{itemize}
 \item Yes, the typechecker does this.
 \end{itemize}
 
 \onslide<4->
-\item Unchangeable format specification
+\item Changing format specification?
 \begin{itemize}
 \item Yes, thanks to a generic programming technique.
 \end{itemize}
