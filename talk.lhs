@@ -141,7 +141,7 @@ we can write
 Hello W0rld!
 \end{verbatim}
 }
-\onslide<2->
+%\onslide<2->
 But we can also write
 {\small
 \begin{verbatim}
@@ -150,7 +150,7 @@ But we can also write
 \end{verbatim}
 }
 unintentionally, of course.
-\onslide<3->
+%\onslide<3->
 Or even
 {\small
 \begin{verbatim}
@@ -178,23 +178,23 @@ we have the same problems as we do with |printf|.
 The functions |printf| and |scanf| are extremely handy, but they should be
 considered ``unsafe'' and difficult to change.
 
-\onslide<2->
+%\onslide<2->
 The problems:
 \begin{itemize}
 
-\onslide<3->
+%\onslide<3->
 \item No validation of the argument types
 \begin{itemize}
 \item Which argument is a string or an integer?
 \end{itemize}
 
-\onslide<4->
+%\onslide<4->
 \item No validation of the arity
 \begin{itemize}
 \item How many arguments does the format spec call for?
 \end{itemize}
 
-\onslide<5->
+%\onslide<5->
 \item Unchangeable format specification
 \begin{itemize}
 \item We're stuck with |%s|, |%d|, etc.
@@ -204,7 +204,7 @@ operations expected.
 
 \end{itemize}
 
-\onslide<6->
+%\onslide<6->
 In C, |printf| can result in buffer overflows among other problems.
 
 \end{frame}
@@ -224,7 +224,7 @@ we can write
 Hello W0rld!
 \end{verbatim}
 }
-\onslide<2->
+%\onslide<2->
 But we can also write
 {\small
 \begin{verbatim}
@@ -232,7 +232,7 @@ But we can also write
 Stopped at <exception thrown>
 \end{verbatim}
 }
-\onslide<3->
+%\onslide<3->
 Or even
 {\small
 \begin{verbatim}
@@ -248,7 +248,7 @@ Hello WStopped at <exception thrown>
 
 Oops!
 
-\onslide<2->
+%\onslide<2->
 Using |Text.Printf| doesn't overflow the buffer, but it doesn't fix any of the
 problems with |printf| in C.
 
@@ -270,7 +270,7 @@ showf :: (Format dd ff, Apply ff String aa) => dd -> aa
 
 readf :: (Format dd aa) => dd -> String -> Maybe aa
 \end{spec}
-\onslide<2->
+%\onslide<2->
 Now, we can write
 {\small
 \begin{verbatim}
@@ -293,7 +293,7 @@ But the typechecker prevents us from writing
     ...
 \end{verbatim}
 }
-\onslide<2->
+%\onslide<2->
 and
 {\small
 \begin{verbatim}
@@ -315,19 +315,19 @@ Does \pkg{xformat} handle our problems?
 
 \begin{itemize}
 
-\onslide<2->
+%\onslide<2->
 \item Validation of the argument types?
 \begin{itemize}
 \item Yes, the typechecker does this.
 \end{itemize}
 
-\onslide<3->
+%\onslide<3->
 \item Validation of the arity?
 \begin{itemize}
 \item Yes, the typechecker does this.
 \end{itemize}
 
-\onslide<4->
+%\onslide<4->
 \item Changing format specification?
 \begin{itemize}
 \item Yes, thanks to a generic programming technique.
@@ -365,14 +365,14 @@ newtype (:.:) ff gg aa  = Comp (ff (gg aa))  deriving Functor
 
 Descriptors are actually quite easy to define.
 
-\onslide<2->
+%\onslide<2->
 For a format constant (e.g. a string), we use the type of that constant (e.g.
 |String|) as the descriptor.
 \begin{spec}
 instance Format String Id where
   showsf' s = Id (showString s)
 \end{spec}
-\onslide<3->
+%\onslide<3->
 For a format placeholder, we create a unit type. The constructor serves as the
 descriptor, and the type serves as a reference to the type of the format.
 \begin{spec}
@@ -389,7 +389,7 @@ instance Format StringF (Arr String) where
 
 We can make many more interesting descriptors.
 
-\onslide<2->
+%\onslide<2->
 Type class dependencies:
 \begin{spec}
 data NumF aa = Num
@@ -397,7 +397,7 @@ data NumF aa = Num
 instance (Num aa) => Format (NumF aa) (Arr aa) where
   showsf' Num = Arr shows
 \end{spec}
-\onslide<3->
+%\onslide<3->
 Recursive formats for containment and composition:
 \begin{spec}
 data a :%: b = a ::%:: b
@@ -416,14 +416,14 @@ f <> g = Comp (fmap (\s -> fmap (\t -> s . t) g) f)
 
 But what do all these descriptors do for us?
 
-\onslide<2->
+%\onslide<2->
 Given the format we used before
 {\small
 \begin{verbatim}
 > :t showsf' (String % " W" % Num % "rld!\n")
 \end{verbatim}
 }
-\onslide<3->
+%\onslide<3->
 we learn that its type is
 \begin{spec}
 (Num aa) =>  (Arr String :.: Id :.: Arr aa :.: Id) ShowS
@@ -441,7 +441,7 @@ We resolve them using this class
 class (Functor ff) => Apply ff aa bb | ff aa -> bb where
   apply :: ff aa -> bb
 \end{spec}
-\onslide<2->
+%\onslide<2->
 The instances indicate the functional dependency from the functor to its
 resolved type.
 \begin{spec}
@@ -466,12 +466,12 @@ To see this in action, we can look at the type again
 > :t apply $ showsf' (String % " W" % Num % "rld!\n")
 \end{verbatim}
 }
-\onslide<2->
+%\onslide<2->
 to learn that it is
 \begin{spec}
 (Num aa) => String -> aa -> String -> String
 \end{spec}
-\onslide<3->
+%\onslide<3->
 And finally we can get to |showf| that we saw earlier
 \begin{spec}
 showf :: (Format dd ff, Apply ff String aa) => dd -> aa
@@ -490,14 +490,14 @@ class (Functor ff) => Apply ff aa where
   type R ff aa :: *
   apply :: ff aa -> R ff aa
 \end{code}
-\onslide<2->
+%\onslide<2->
 Then the following type inference
 {\small
 \begin{verbatim}
 > :t apply $ showsf' (String % " W" % Num % "rld!\n")
 \end{verbatim}
 }
-\onslide<3->
+%\onslide<3->
 gives me
 \begin{spec}
 (Num aa) => R (Arr String :.: Id :.: Arr aa :.: Id) (String -> String)
@@ -513,11 +513,11 @@ We looked at a recently release package called \pkg{xformat} with extensible,
 type-safe |printf|- and |scanf|-like functions. Though we didn't cover
 |Text.XFormat.Read| and |readf|, the design is similar and simpler.
 
-\onslide<2->
+%\onslide<2->
 The research behind this can be found in articles by Olivier Danvy and Ralf
 Hinze linked at \url{http://www.citeulike.org/user/spl/tag/printf}.
 
-\onslide<3->
+%\onslide<3->
 After talking to Bryan O'Sullivan about this, I'm thinking about developing a
 quasiquoter on top of \pkg{xformat} so you can write your format descriptor
 something like
