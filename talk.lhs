@@ -3,7 +3,7 @@
 %-------------------------------------------------------------------------------
 % C Preprocessor Directives
 
-#define DO_PAUSES
+#undef DO_PAUSES
 
 #include "pause.h"
 
@@ -144,7 +144,9 @@ deriving instance Functor List2
 
 \author{Sean Leather}
 
-\date[2011-10-18]{18 October 2011}
+\institute{Utrecht University}
+
+\date[2011-10-18]{8 November 2011}
 
 %-------------------------------------------------------------------------------
 
