@@ -1,0 +1,71 @@
+
+\ProvidesPackage{talk}
+
+%-------------------------------------------------------------------------------
+% Packages
+
+% Allow for UTF-8 characters in text. With this, you can type ü instead of \"u.
+%\usepackage[utf8]{inputenc}
+
+% Support languages with English as the default
+\usepackage[english]{babel}
+
+% Sync input and PDF output
+\usepackage{pdfsync}
+
+% Used for shadowblock environment amongst other things
+\usepackage{tikz}
+
+% For \vcentcolon
+\usepackage{mathtools}
+
+%-------------------------------------------------------------------------------
+% Colors
+
+\definecolor{lightgrey}{rgb}{0.9,0.9,0.9}
+\definecolor{lightred}{rgb}{1.0,0.8,0.8}
+
+\colorlet{codecolor}{beamerstructure!10!white}
+
+%-------------------------------------------------------------------------------
+% Beamer Configuration
+
+% Theme
+% \usetheme{uucs} % UU CS
+\usetheme[secheader]{Boadilla}
+
+% Template configuration
+%\setbeamertemplate{items}[circle]
+\setbeamertemplate{navigation symbols}{} % No nav symbols
+
+% Font configuration
+\setbeamerfont{title}{size=\Huge,series=\bfseries}
+\setbeamerfont{frametitle}{size=\huge}
+
+% Overlays
+%\beamerdefaultoverlayspecification{<+->} % Pause everywhere
+\setbeamercovered{invisible} % Overlays are invisible
+
+%-------------------------------------------------------------------------------
+% Commands
+
+% the `doubleequals' macro is due to Jeremy Gibbons
+\def\doubleequals{\mathrel{\unitlength 0.01em
+  \begin{picture}(78,40)
+    \put(7,34){\line(1,0){25}} \put(45,34){\line(1,0){25}}
+    \put(7,14){\line(1,0){25}} \put(45,14){\line(1,0){25}}
+  \end{picture}}}
+
+% Start a section and show a frame with the section title
+\newcommand{\sectionframe}[1]{
+\section{#1}
+\begin{frame}
+\begin{center}
+\Huge #1
+\end{center}
+\end{frame}
+}
+
+\newenvironment{question}%
+  {\begin{exampleblock}{Question}}%
+  {\end{exampleblock}}
