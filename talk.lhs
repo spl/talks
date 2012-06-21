@@ -290,7 +290,7 @@ PAUSE_LINE
 In Haskell:
 \begin{itemize}INCREMENT
 \item Both forms already exist.
-\item We don't call them generics because they are inherent to the language.
+\item We don't call them generics because they're native to the language.
 \end{itemize}
 
 PAUSE_LINE
@@ -393,7 +393,7 @@ a_2 = Right
 
 When talking about alternatives in structural sense, we often call them
 \alert{sums}. |Either| is the basic binary sum type. For conciseness, we will
-use the identical binary sum type:
+use this (identical) binary sum type:
 
 \begin{code}
 data (PURPLE(a)) :+: (PURPLE(b)) = (GREEN(L)) (BLUE(a)) | (GREEN(R)) (BLUE(b))
@@ -401,7 +401,7 @@ data (PURPLE(a)) :+: (PURPLE(b)) = (GREEN(L)) (BLUE(a)) | (GREEN(R)) (BLUE(b))
 
 PAUSE_LINE
 
-What about this type?
+What about a type with more than 2 alternatives?
 \begin{code}
 data AltEx_3 = (GREEN(B_1)) (BLUE(Int)) | (GREEN(B_2)) (BLUE(Char)) | (GREEN(B_3)) (BLUE(Float))
 \end{code}
@@ -439,7 +439,7 @@ data FldEx_2 = (GREEN(FldEx_2)) (BLUE(Int)) (BLUE(Char))
 
 PAUSE_LINE
 
-Again note the similarity to a standard type, the pair:
+Again, note the similarity to a standard type, the pair:
 \begin{spec}
 data (,) (PURPLE(a)) (PURPLE(b)) = (GREEN((,))) (BLUE(a)) (BLUE(b))
 \end{spec}
@@ -451,10 +451,7 @@ And again, we model |FldEx_2| similarly:
 type FldEx_2' = (,) (BLUE(Int)) (BLUE(Char))
 \end{code}
 
-PAUSE_LINE
-
-with the following ``smart'' constructor:
-
+with the smart constructor:
 \begin{code}
 fldEx_2' :: (BLUE(Int)) -> (BLUE(Char)) -> FldEx_2'
 fldEx_2' = (,)
@@ -478,7 +475,7 @@ And more than two fields...
 data FldEx_3 = (GREEN(FldEx_3)) (BLUE(Int)) (BLUE(Char)) (BLUE(Float))
 \end{code}
 
-PAUSE_LINE
+PAUSE
 
 ... are modeled by nested binary products:
 \begin{code}
@@ -515,7 +512,7 @@ Notes:
 \item We use the ``unit'' type |data U = U| (identical to the standard type
 |()|) to represent an alternative without fields.
 
-\item |:+:| is |infixr 5|, and |:*:| is |infixr 6|, so we can write this
+\item |:+:| is |infixr 5|, and |:*:| is |infixr 6|, so we can write |Rep_D|
 naturally, without unnecessary parentheses.
 
 \end{itemize}
@@ -531,26 +528,27 @@ naturally, without unnecessary parentheses.
 %format to_D' = "\Varid{to_{" D "}}"
 %endif
 
-So, we think we can model datatypes. But how do we know the type is identical?
+So, we think we can model datatypes. But how do we know the |Rep_D| type
+accurately models |D|?
 
 PAUSE_LINE
 
 We define an \alert{isomorphism}: two total functions that convert between
 types.
 
-PAUSE_LINE
+PAUSE
 
 \begin{code}
-from_D :: D (PURPLE(p)) -> Rep_D (PURPLE(p))
-from_D  Alt_1        = L U
-from_D  (Alt_2 i p)  = R (i :*: p)
+from_D :: D p -> Rep_D p
+from_D  Alt_1          = L U
+from_D  (Alt_2 i p)    = R (i :*: p)
 
-to_D :: Rep_D (PURPLE(p)) -> D (PURPLE(p))
-to_D  (L U)          = Alt_1
-to_D  (R (i :*: p))  = Alt_2 i p
+to_D :: Rep_D p -> D p
+to_D    (L U)          = Alt_1
+to_D    (R (i :*: p))  = Alt_2 i p
 \end{code}
 
-PAUSE_LINE
+PAUSE
 
 This allows us to convert terms between (1) the familiar datatype and (2) the
 \alert{structure representation} used for generic operations.
@@ -560,7 +558,7 @@ This allows us to convert terms between (1) the familiar datatype and (2) the
 \begin{frame}{Structure of Datatypes: Constructors}
 
 Oh, but there's one more thing... You might have noticed that the representation
-lacked any information about that constructors (e.g. the names).
+lacked any information about that constructors (e.g.\ the names).
 
 PAUSE_LINE
 
@@ -587,7 +585,7 @@ to_D'  (R (C nm (i :*: p)))  = Alt_2 i p
 
 PAUSE_LINE
 
-We can put additional metadata (e.g. fixity) into |C| as needed.
+We can put additional metadata (e.g.\ fixity) into |C| as needed.
 
 \end{frame}
 %-------------------------------------------------------------------------------
@@ -704,19 +702,19 @@ instead of a pattern), we need several addtional things:
 
 \begin{itemize}INCREMENT
 
-\item Polymorphic recursion -- functions with a common scheme that reference
-each other and allow types to change in the calls
+\item \alert{Polymorphic recursion} -- functions with a common scheme that
+reference each other and allow types to change in the calls
 \begin{spec}
-show_unit  ::          U         -> String
-show_con   :: ...  ^^  C a       -> String
-show_sum   :: ...  ^^  a :+: b   -> String
+show_unit  ::         U         -> String
+show_con   :: ... =>  C a       -> String
+show_sum   :: ... =>  a :+: b   -> String
 ...
 \end{spec}
 
 \item A common encoding for isomorphisms
 \begin{spec}
-data  T      = ... {- User-defined datatype -}
-type  Rep_T  = ... {- Structure representation -}
+data  T      = ...  -- User-defined datatype
+type  Rep_T  = ...  -- Structure representation
 from  :: T -> Rep_T
 to    :: Rep_T -> T
 \end{spec}
@@ -800,15 +798,11 @@ Now, recall |show_Rep_D|:
 
 PAUSE_LINE
 
-Compare that to the new version that is now possible:
+Compare to the new version that is now possible:
 \begin{code}
 show_Rep_D' :: Show p => Rep_D' p -> String
 show_Rep_D' = show
 \end{code}
-
-PAUSE_LINE
-
-Did you have your "A ha!" moment, yet?
 
 \end{frame}
 %-------------------------------------------------------------------------------
@@ -823,7 +817,7 @@ show_D' = show_Rep_D' . from_D'
 
 PAUSE_LINE
 
-Goal:
+Next goal:
 \begin{itemize}INCREMENT
 
 \item Define one |show| function that knows how to convert any type |T| to its
@@ -836,12 +830,14 @@ structure representation type |Rep_T|, given an isomorphism between |T| and
 %-------------------------------------------------------------------------------
 \begin{frame}{Encoding Isomorphisms}
 
-We again turn to a type class, but with the addition of a \emph{type family}.
+We define a class of function pairs.
 
 \begin{itemize}INCREMENT
 
-\item We are defining a class of functions that implement isomorphisms between a
-datatype and its structure representation.
+\item We again use a type class, but with the addition of a \emph{type family}.
+
+\item Each function pair implements an isomorphism between a datatype |T| and
+its structure representation |Rep_T|:
 \begin{columns}
 \column{.28\textwidth}
 \begin{spec}
@@ -853,9 +849,8 @@ to :: Rep_T -> T
 \end{spec}
 \end{columns}
 
-\item Each function pair requires two types, so each instance must have two
-types (unlike the |Show| instances which needed only the structure
-representation type).
+\item Each requires two types, so each instance must have two types (unlike the
+|Show| instances which needed only the structure representation type).
 
 \item |Rep_T| is precisely determined by |T|, so really we only need one unique
 type and a second type derivable from the first.
@@ -903,7 +898,7 @@ functions.
 
 PAUSE_LINE
 
-The instance for |D| uses the definitions that we have already seen:
+The instance for |D| uses definitions that we've already seen:
 
 \begin{code}
 instance Generic (D p) where
@@ -919,8 +914,8 @@ PAUSE
 \item Other instances are defined similarly.
 
 \item In fact, |Rep T|, |from|, and |to| are precisely determined by the
-definition of |T|, so these instances can be automatically generated (e.g.\
-using Template Haskell or a preprocessor).
+definition of |T|, so these instances can be automatically generated
+(e.g.\ using Template Haskell or a preprocessor).
 
 \end{itemize}
 
@@ -958,8 +953,8 @@ gshow = show . from
 \item Many different libraries:
 \begin{itemize}
 \item Instant Generics -- presented here
-\item Generic Deriving -- GHC \(\geq\) 7.2, similar to above
-\item EMGM -- I maintain
+\item Generic Deriving -- GHC \(\geq\) 7.2, similar to Instant Generics
+\item EMGM -- maintained by me
 \item Regular -- folds, etc.
 \item Multirec -- mutually recursive datatypes, folds, etc.
 \item Scrap Your Boilerplate (SYB) -- GHC, traversals, queries
