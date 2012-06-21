@@ -117,11 +117,11 @@ showf = apply . showf'
 
 %if style == newcode
 \begin{code}
-data IntF = Int
+data StringF = String
 
-instance Format IntF where
-  type F IntF = Arr Int
-  showf' Int = Arr show
+instance Format StringF where
+  type F StringF = Arr String
+  showf' String = Arr id
 
 data a :%: b = a :%: b
 
@@ -297,8 +297,8 @@ PAUSE_LINE
 
 \alert{Datatype-generic programming}:
 \begin{itemize}INCREMENT
-\item We abstract over the \emph{structure of a datatype}.
-\item It is also known as ``polytypism'' and ``shape-/structure-polymorphism''.
+\item Abstract over the \emph{structure of a datatype}
+\item Also known as ``polytypism'' and ``shape-/structure-polymorphism''
 \end{itemize}
 
 \end{frame}
@@ -326,8 +326,8 @@ Non-syntactic features:
 
 PAUSE_LINE
 
-There are other features of datatypes, but we will use the above as a
-foundation.
+There are other features of datatypes, but we will consider only the above as a
+foundation for looking at the structure.
 
 \end{frame}
 %-------------------------------------------------------------------------------
@@ -344,7 +344,7 @@ foundation.
 %format a_2
 %endif
 
-First, alternatives:
+First structural element: alternatives.
 \begin{code}
 data AltEx_2 = (GREEN(A_1)) (BLUE(Int)) | (GREEN(A_2)) (BLUE(Char))
 \end{code}
@@ -392,8 +392,8 @@ a_2 = Right
 %endif
 
 When talking about alternatives in structural sense, we often call them
-\alert{sums}. |Either| is the basic binary sum type. For conciseness, we will
-use this (identical) binary sum type:
+\alert{sums}. |Either| is the basic binary sum type. For conciseness, we use
+this (identical) binary sum type:
 
 \begin{code}
 data (PURPLE(a)) :+: (PURPLE(b)) = (GREEN(L)) (BLUE(a)) | (GREEN(R)) (BLUE(b))
@@ -401,7 +401,7 @@ data (PURPLE(a)) :+: (PURPLE(b)) = (GREEN(L)) (BLUE(a)) | (GREEN(R)) (BLUE(b))
 
 PAUSE_LINE
 
-What about a type with more than 2 alternatives?
+What about a type with \(< 2\) alternatives?
 \begin{code}
 data AltEx_3 = (GREEN(B_1)) (BLUE(Int)) | (GREEN(B_2)) (BLUE(Char)) | (GREEN(B_3)) (BLUE(Float))
 \end{code}
@@ -432,7 +432,7 @@ b_3 = R . R
 %format fldEx_3' = "\Varid{{fldEx}_{3}^{\prime}}"
 %endif
 
-Next, fields:
+Next: fields.
 \begin{code}
 data FldEx_2 = (GREEN(FldEx_2)) (BLUE(Int)) (BLUE(Char))
 \end{code}
@@ -492,7 +492,7 @@ fldEx_3' x y z = x :*: (y :*: z)
 %-------------------------------------------------------------------------------
 \begin{frame}{Structure of Datatypes: Sums of Products}
 
-To sum it all up (pun intended), recall the first datatype example:
+To ``sum'' it all up, recall the first datatype example:
 
 \dataD
 
@@ -528,8 +528,8 @@ naturally, without unnecessary parentheses.
 %format to_D' = "\Varid{to_{" D "}}"
 %endif
 
-So, we think we can model datatypes. But how do we know the |Rep_D| type
-accurately models |D|?
+So, we think we can model datatypes. But how do we know |Rep_D| accurately
+models |D|?
 
 PAUSE_LINE
 
@@ -557,8 +557,12 @@ This allows us to convert terms between (1) the familiar datatype and (2) the
 %-------------------------------------------------------------------------------
 \begin{frame}{Structure of Datatypes: Constructors}
 
-Oh, but there's one more thing... You might have noticed that the representation
-lacked any information about that constructors (e.g.\ the names).
+Oh, but there's one more thing...
+
+PAUSE
+
+You may have noticed the representation lacked any information about the
+constructors (e.g.\ the names).
 
 PAUSE_LINE
 
@@ -569,7 +573,7 @@ data C (PURPLE(a)) = C String (BLUE(a))
 
 PAUSE_LINE
 
-We extend the representation with |C| to store constructor names:
+We modify the representation to store constructor names:
 \begin{code}
 type Rep_D' (PURPLE(p)) = C U :+: C ((BLUE(Int)) :*: (BLUE(p)))
 
@@ -583,9 +587,9 @@ to_D'  (R (C nm (i :*: p)))  = Alt_2 i p
 \end{code}
 %endif
 
-PAUSE_LINE
+PAUSE
 
-We can put additional metadata (e.g.\ fixity) into |C| as needed.
+We could also put additional metadata (e.g.\ fixity) into |C|.
 
 \end{frame}
 %-------------------------------------------------------------------------------
@@ -675,11 +679,10 @@ show_D show_p = show_Rep_D show_p . from_D'
 LINE
 
 Some observations:
-PAUSE
 \begin{itemize}INCREMENT
 
 \item This is a sort of predictable pattern (or recipe) for defining |show|
-functions.
+functions on structure representations.
 
 \item The functions are recursive but not in the usual way because the argument
 types differ.
@@ -700,10 +703,13 @@ support all combinations, \emph{generically}.
 In order to jump into ``true'' genericity (where the structure is a parameter
 instead of a pattern), we need several addtional things:
 
+PAUSE
+
 \begin{itemize}INCREMENT
 
 \item \alert{Polymorphic recursion} -- functions with a common scheme that
 reference each other and allow types to change in the calls
+PAUSE
 \begin{spec}
 show_unit  ::         U         -> String
 show_con   :: ... =>  C a       -> String
@@ -712,6 +718,7 @@ show_sum   :: ... =>  a :+: b   -> String
 \end{spec}
 
 \item A common encoding for isomorphisms
+PAUSE
 \begin{spec}
 data  T      = ...  -- User-defined datatype
 type  Rep_T  = ...  -- Structure representation
@@ -727,6 +734,8 @@ to    :: Rep_T -> T
 
 There are several ways to encode polymorphic recursion. We will use type
 classes.
+
+PAUSE
 
 \begin{itemize}INCREMENT
 
@@ -1213,7 +1222,7 @@ PAUSE
 \begin{itemize}INCREMENT
 
 \item In the end, we construct a function, |T_1 -> ... -> T_n|, given a
-composition, |f_1 :%: ... :%: f_n|, of format descriptors.
+composition, |f_1 <> ... <> f_n|, of format descriptors.
 
 \item We track the argument (and result) type expected by each descriptor using
 functors.
@@ -1270,7 +1279,7 @@ instance (Functor f, Functor g) => Functor (f :.: g) where
 
 \item The functors give us terms for the components of a function composition.
 
-\item We need a way to ``lift'' the functor to get actual composed function
+\item We need a way to ``lift'' the functor to get the actual composed function
 type.
 
 \end{itemize}
@@ -1411,10 +1420,11 @@ instance Format String where
 
 \item Some instances define argument types:
 \begin{code}
-data StringF = String
-instance Format StringF where
-  type F StringF = Arr String
-  showf' String = Arr id
+data IntF = Int
+
+instance Format IntF where
+  type F IntF = Arr Int
+  showf' Int = Arr show
 \end{code}
 
 \end{itemize}
