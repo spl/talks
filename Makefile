@@ -34,7 +34,7 @@ ghci : talk.lhs
 # Other rules
 
 clean :
-	rm -f *~ *.aux *.bbl *.blg *.log *.vrb *.toc *.out *.nav *.snm *.rel *.mpx *.ptb *.fdb_latexmk *.pdfsync printf.o a.out
+	rm -f talk.tex *~ *.aux *.bbl *.blg *.log *.vrb *.toc *.out *.nav *.snm *.rel *.mpx *.ptb *.fdb_latexmk *.pdfsync printf.o a.out
 
 realclean : clean
 	rm -f *.pdf
