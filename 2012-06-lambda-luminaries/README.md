@@ -2,9 +2,9 @@
 
 **Date:**       2012-06-21
 
-**Location:**   House4Hack in Centurion, South Africa
+**Location:**   [House4Hack](http://www.house4hack.co.za/) in Centurion, South Africa
 
-**Audience:**   Lambda Luminaries
+**Audience:**   [Lambda Luminaries](http://www.meetup.com/lambda-luminaries/)
 
 **Abstract:**
 This talk has two parts. The first part introduces the concepts of
