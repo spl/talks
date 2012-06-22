@@ -15,6 +15,7 @@
   columns=fullflexible,
   aboveskip=-1pt,
   belowskip=1pt,
+  showstringspaces=false,
 }
 
 %-------------------------------------------------------------------------------
@@ -76,8 +77,8 @@ data D (PURPLE(p)) = (GREEN(Alt_1)) | (GREEN(Alt_2)) (BLUE(Int)) (BLUE(p))
 %format show_prod = "\Varid{show_{\times}}"
 %format show_sum = "\Varid{show_{+}}"
 %format show_int = "\Varid{show_{Int}}"
-%format show_x = "\Varid{show_{x}}"
-%format show_y = "\Varid{show_{y}}"
+%format show_a = "\Varid{show_{a}}"
+%format show_b = "\Varid{show_{b}}"
 %format show_Rep_D = "\Varid{show_{" Rep_D' "}}"
 %format show_Rep_D' = "\Varid{show_{" Rep_D' "}^{\prime}}"
 %format show_D = "\Varid{show_{" D "}}"
@@ -198,12 +199,13 @@ instance (Format f1, Format f2, Format f3, Format f4) => Format (f1, f2, f3, f4)
 % Title
 
 \title[GP in Haskell]{Generic Programming \\ in Haskell}
+\subtitle{Presented to the Lambda Luminaries}
 
 \author{Sean Leather}
 
 \institute{Utrecht University}
 
-\date[2012-06-21]{21 June 2011}
+\date[2012-06-21]{21 June 2012}
 
 %-------------------------------------------------------------------------------
 
@@ -501,7 +503,7 @@ PAUSE_LINE
 We can define an identical type using the sum and product types we have
 just discussed:
 \begin{code}
-type Rep_D (PURPLE(p)) = U :+: (BLUE(Int)) :*: (BLUE(p))
+type Rep_D (PURPLE(p)) = (BLUE(U)) :+: (BLUE(Int)) :*: (BLUE(p))
 \end{code}
 
 PAUSE_LINE
@@ -575,7 +577,7 @@ PAUSE_LINE
 
 We modify the representation to store constructor names:
 \begin{code}
-type Rep_D' (PURPLE(p)) = C U :+: C ((BLUE(Int)) :*: (BLUE(p)))
+type Rep_D' (PURPLE(p)) = C (BLUE(U)) :+: C ((BLUE(Int)) :*: (BLUE(p)))
 
 from_D'  Alt_1        = L (C "Alt1" U)
 from_D'  (Alt_2 i p)  = R (C "Alt2" (i :*: p))
@@ -633,8 +635,8 @@ PAUSE
 Constructor name:
 \begin{code}
 show_con :: (a -> String) -> C a -> String
-show_con show_x (C nm x) =
-  "(" ++ nm ++ " " ++ show_x x ++ ")"
+show_con show_a (C nm a) =
+  "(" ++ nm ++ " " ++ show_a a ++ ")"
 \end{code}
 \end{columns}
 
@@ -643,7 +645,7 @@ PAUSE_LINE
 Binary product:
 \begin{code}
 show_prod :: (a -> String) -> (b -> String) -> a :*: b -> String
-show_prod show_x show_y (x :*: y) = show_x x ++ " " ++ show_y y
+show_prod show_a show_b (a :*: b) = show_a a ++ " " ++ show_b b
 \end{code}
 
 PAUSE_LINE
@@ -651,8 +653,8 @@ PAUSE_LINE
 Binary sum:
 \begin{code}
 show_sum :: (a -> String) -> (b -> String) -> a :+: b -> String
-show_sum show_x _ (L x) = show_x x
-show_sum _ show_y (R y) = show_y y
+show_sum show_a _ (L a) = show_a a
+show_sum _ show_b (R b) = show_b b
 \end{code}
 
 \end{frame}
@@ -1100,15 +1102,15 @@ printf :: Format f => f -> A (F f) (IO ())
 PAUSE
 Try it in GHCi:
 \begin{verbatim}
-ghci> printf (String, " W", Num, "rld!\n") "Hello" 0
+ghci> printf (String, " W", Int, "rld!\n") "Hello" 0
 \end{verbatim}
 PAUSE
 \begin{verbatim}
-ghci> printf (String, " W", Num, "rld!\n") 0 "Hello"
+ghci> printf (String, " W", Int, "rld!\n") 0 "Hello"
 \end{verbatim}
 PAUSE
 \begin{verbatim}
-ghci> printf (String, " W", Num, "rld!\n") "Hello"
+ghci> printf (String, " W", Int, "rld!\n") "Hello"
 \end{verbatim}
 
 \end{frame}
@@ -1279,8 +1281,7 @@ instance (Functor f, Functor g) => Functor (f :.: g) where
 
 \item The functors give us terms for the components of a function composition.
 
-\item We need a way to ``lift'' the functor to get the actual composed function
-type.
+\item We need a way to ``lift'' the functor to get the actual function type.
 
 \end{itemize}
 
@@ -1518,7 +1519,7 @@ format descriptor |f|.
 Generic Programming in Haskell:
 \begin{itemize}
 
-\item Johan Jeuring, Sean Leather, Jos\'{e} Pedro Magalha\~{a}es, Alexey
+\item Johan Jeuring, Sean Leather, Jos\'{e} Pedro Magalh\~{a}es, Alexey
 Rodriguez Yakushev. \textit{Libraries for Generic Programming in Haskell}. AFP
 2008. pp. 165-229, 2009.
 
