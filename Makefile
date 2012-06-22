@@ -36,9 +36,6 @@ ghci : talk.lhs
 clean :
 	rm -f talk.tex *~ *.aux *.bbl *.blg *.log *.vrb *.toc *.out *.nav *.snm *.rel *.mpx *.ptb *.fdb_latexmk *.pdfsync printf.o a.out
 
-realclean : clean
-	rm -f *.pdf
-
 #-------------------------------------------------------------------------------
 # Other
 
