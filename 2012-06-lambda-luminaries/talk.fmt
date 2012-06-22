@@ -1,0 +1,102 @@
+
+%-------------------------------------------------------------------------------
+% Packages
+
+\usepackage{talk}
+
+%-------------------------------------------------------------------------------
+% Includes
+
+%include polycode.fmt
+%include spacing.fmt
+
+%-------------------------------------------------------------------------------
+% General
+
+\newcommand{\keyword}[1]{\mathbf{#1}}
+\newcommand{\inline}[1]{\colorbox{codecolor}{\ensuremath{#1}}}
+\newcommand{\pkg}[1]{\texttt{#1}}
+
+\renewcommand{\Varid}[1]{\mathsf{#1}}
+\renewcommand{\Conid}[1]{\mathsf{#1}}
+
+%if style /= newcode
+%subst keyword a  = "{\keyword{" a "}}"
+%subst inline a   = "{\inline{" a "}}"
+%subst code a     = "\begin{beamerboxesrounded}{}'n\begin{hscode}\SaveRestoreHook'n" a "\ColumnHook'n\end{hscode}\resethooks'n\end{beamerboxesrounded}'n"
+%endif
+
+% No indentation
+\texths
+
+%-------------------------------------------------------------------------------
+% Formats
+
+% Keywords
+%if style /= newcode
+
+% 'in' is not a keyword for some reason
+%format in = "\keyword{in}"
+
+%format family = "\keyword{family}"
+%endif
+
+%format dot = "."
+
+%if style == newcode
+%format emptyDots =
+%format undefinedDots = "undefined"
+%else
+%format emptyDots = "\ldots "
+%format undefinedDots = ...
+%endif
+
+%if style == newcode
+%format forall = "forall "
+%else
+%format forall = "\forall "
+%endif
+
+%if style == newcode
+%format (HIDEDEF(x)(y)) = x = y
+%else
+%format (HIDEDEF(x)(y)) = y
+%endif
+
+%format prompt = "\texttt{ghci{>}}\;"
+
+\newcommand{\RED}[1]{{\color{red}#1}}
+\newcommand{\GREEN}[1]{{\color{green!60!black}#1}}
+\newcommand{\BLUE}[1]{{\color{blue}#1}}
+\newcommand{\PURPLE}[1]{{\color{purple}#1}}
+
+%if style == newcode
+%format (RED(x)) = x
+%format (GREEN(x)) = x
+%format (BLUE(x)) = x
+%format (PURPLE(x)) = x
+%else
+%format (RED(x)) = "\RED{" x "}"
+%format (GREEN(x)) = "\GREEN{" x "}"
+%format (BLUE(x)) = "\BLUE{" x "}"
+%format (PURPLE(x)) = "\PURPLE{" x "}"
+%endif
+
+%if style /= newcode
+%format =~ = "\cong "
+%format ~~ = "\approx "
+%format :+: = "\mathbin{\vcentcolon\kern-0.4em+\kern-0.4em\vcentcolon}"
+%format :*: = "\mathbin{\vcentcolon\kern-0.4em\times\kern-0.4em\vcentcolon}"
+%format :.: = "\mathbin{\vcentcolon\kern-0.4em\circ\kern-0.4em\vcentcolon}"
+%format :%: = "\mathbin{\vcentcolon\kern-0.3em\%\kern-0.3em\vcentcolon}"
+%format :>: = "\mathbin{\vcentcolon\kern-0.1em>\kern-0.2em\vcentcolon}"
+%format :=> = "\mathbin{\vcentcolon\kern-0.1em\Rightarrow}"
+%format :-> = "\mathbin{\vcentcolon\kern-0.1em\rightarrow}"
+%format <> = "\diamond "
+%format :<> = "\mathbin{\vcentcolon\kern-0.4em\diamond}"
+%format :& = "\mathbin{\vcentcolon\kern-0.3em\oblong}"
+%format <$> = "\mathbin{\langle\$\rangle}"
+%format <*> = "\mathbin{\langle\kern-0.1em\star\kern-0.1em\rangle}"
+
+%endif
+
