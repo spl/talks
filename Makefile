@@ -12,6 +12,9 @@ CPP             := cpp -P
 
 all : talk.pdf
 
+ghci : talk.lhs
+	$(GHC) --interactive -pgmL lhs2TeX -optL--pre $<
+
 #-------------------------------------------------------------------------------
 # Pattern rules
 
