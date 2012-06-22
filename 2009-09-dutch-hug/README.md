@@ -4,7 +4,7 @@
 
 **Location:**   Utrecht University in Utrecht, Netherlands
 
-**Audience:**   Dutch Haskell Users Group
+**Audience:**   [Dutch Haskell Users Group](http://dutchhug.nl/)
 
 **Abstract:**
 This talk describes the motivation behind and design of the `xformat` library
