@@ -1,0 +1,16 @@
+.DS_Store
+*.swp
+*.aux
+*.fdb_latexmk
+*.log
+*.out
+*.ptb
+*.nav
+*.snm
+*.toc
+*.pdfsync
+*.hi
+*.o
+*.agdai
+format
+generated.fmt

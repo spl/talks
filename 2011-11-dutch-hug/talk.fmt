@@ -1,0 +1,93 @@
+
+%-------------------------------------------------------------------------------
+% Packages
+
+\usepackage{talk}
+
+%-------------------------------------------------------------------------------
+% Includes
+
+%include polycode.fmt
+%include spacing.fmt
+
+%include generated.fmt
+
+%-------------------------------------------------------------------------------
+% General
+
+\newcommand{\keyword}[1]{\mathbf{#1}}
+\newcommand{\inline}[1]{\colorbox{codecolor}{\ensuremath{#1}}}
+
+\renewcommand{\Varid}[1]{\mathsf{#1}}
+\renewcommand{\Conid}[1]{\mathsf{#1}}
+
+%if style /= newcode
+%subst keyword a  = "{\keyword{" a "}}"
+%subst inline a   = "{\inline{" a "}}"
+%subst code a     = "\begin{beamerboxesrounded}{}'n\begin{hscode}\SaveRestoreHook'n" a "\ColumnHook'n\end{hscode}\resethooks'n\end{beamerboxesrounded}'n"
+%endif
+
+% No indentation
+\texths
+
+%-------------------------------------------------------------------------------
+% Formats
+
+% Keywords
+%if style /= newcode
+
+% 'in' is not a keyword for some reason
+%format in = "\keyword{in}"
+
+%format family = "\keyword{family}"
+%endif
+
+%format dot = "."
+
+%if style == newcode
+%format emptyDots =
+%format undefinedDots = "undefined"
+%else
+%format emptyDots = "\ldots "
+%format undefinedDots = ...
+%endif
+
+%if style == newcode
+%format forall = "forall "
+%else
+%format forall = "\forall "
+%endif
+
+%if style == newcode
+%format (hideVal(x)(y)) = x = y
+%else
+%format (hideVal(x)(y)) = y
+%endif
+
+%if style == newcode
+%format (RED(x)) = x
+%format (GREEN(x)) = x
+%format (BLUE(x)) = x
+%format (PURPLE(x)) = x
+%else
+%format (RED(x)) = "{\color{red}" x "}"
+%format (GREEN(x)) = "{\color{green!60!black}" x "}"
+%format (BLUE(x)) = "{\color{blue}" x "}"
+%format (PURPLE(x)) = "{\color{purple}" x "}"
+%endif
+
+%if style /= newcode
+%format :+: = "\mathbin{\vcentcolon\kern-0.4em+\kern-0.4em\vcentcolon}"
+%format :*: = "\mathbin{\vcentcolon\kern-0.4em\times\kern-0.4em\vcentcolon}"
+%format :.: = "\mathbin{\vcentcolon\kern-0.4em\circ\kern-0.4em\vcentcolon}"
+%format :>: = "\mathbin{\vcentcolon\kern-0.1em>\kern-0.2em\vcentcolon}"
+%format :=> = "\mathbin{\vcentcolon\kern-0.1em\Rightarrow}"
+%format :-> = "\mathbin{\vcentcolon\kern-0.1em\rightarrow}"
+%format <> = "\diamond "
+%format :<> = "\mathbin{\vcentcolon\kern-0.4em\diamond}"
+%format :& = "\mathbin{\vcentcolon\kern-0.3em\oblong}"
+%format <$> = "\mathbin{\langle\$\rangle}"
+%format <*> = "\mathbin{\langle\kern-0.1em\star\kern-0.1em\rangle}"
+
+%endif
+
