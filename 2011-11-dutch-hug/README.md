@@ -4,7 +4,7 @@
 
 **Location:**   Utrecht University in Utrecht, Netherlands
 
-**Audience:**   Dutch Haskell Users Group
+**Audience:**   [Dutch Haskell Users Group](http://dutchhug.nl/)
 
 **Abstract:**
 This talk motivates and describes the design of `generic-deriving` that is
