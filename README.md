@@ -1,1 +1,1 @@
-This is a collection of slides from various talks that I've given.
+This repository contains the source files for various talks that I've given. PDFs can be downloaded [here](https://github.com/spl/talks/downloads).
