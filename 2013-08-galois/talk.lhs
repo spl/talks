@@ -30,7 +30,8 @@
 %-------------------------------------------------------------------------------
 % Commands
 
-\newcommand{\CPP}{\ensuremath{\text{C}\plus} }
+\newcommand{\CPP}{C\nolinebreak\hspace{-.05em}\raisebox{.4ex}{\tiny\bf +}\nolinebreak\hspace{-.10em}\raisebox{.4ex}{\tiny\bf +}}
+\newcommand{\CSharp}{C\nolinebreak\hspace{-.05em}\raisebox{.6ex}{\tiny\bf \#}}
 
 %-------------------------------------------------------------------------------
 % Titles
@@ -228,8 +229,8 @@ The adjective ``generic'' is heavily overloaded.
 PAUSE_LINE
 
 \begin{itemize}INCREMENT
-\item Java/C\# generics
-\item C++ templates
+\item Java/\CSharp{} generics
+\item \CPP{} templates
 \item Ada generic packages
 \end{itemize}
 
@@ -253,7 +254,7 @@ Some form of parameterization and instantiation
 \begin{frame}[fragile]
 \frametitle{Examples of Generic Programming}
 
-Java/C\#:
+Java/\CSharp{}:
 \begin{beamerboxesrounded}{}
 \begin{lstlisting}[language=Java]
 public class Stack<T>
@@ -269,7 +270,7 @@ public class Stack<T>
 \begin{frame}[fragile]
 \frametitle{Examples of Generic Programming}
 
-\CPP:
+\CPP{}:
 \begin{beamerboxesrounded}{}
 \begin{lstlisting}[language=C++]
 template<typename T, typename Compare>
@@ -289,7 +290,7 @@ T& min(T& a, T& b, Compare comp) {
 In other words:
 \begin{itemize}INCREMENT
 \item Java-style generics \(\approx\) parametric polymorphism
-\item C++ templates \(\approx\) ad-hoc polymorphism
+\item \CPP{} templates \(\approx\) ad-hoc polymorphism
 \end{itemize}
 
 PAUSE_LINE
