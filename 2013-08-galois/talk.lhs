@@ -218,7 +218,8 @@ instance (Format f1, Format f2, Format f3, Format f4) => Format (f1, f2, f3, f4)
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}{What is \alert{Generic Programming}?}
+\begin{frame}
+\frametitle{What is \alert{Generic Programming}?}
 
 PAUSE
 
@@ -234,7 +235,8 @@ PAUSE_LINE
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}{What is Generic Programming?}
+\begin{frame}
+\frametitle{What is Generic Programming?}
 
 \begin{block}{The goal is often the same.}
 A higher level of abstraction than ``normally'' available
@@ -248,7 +250,8 @@ Some form of parameterization and instantiation
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}[fragile]{Examples of Generic Programming}
+\begin{frame}[fragile]
+\frametitle{Examples of Generic Programming}
 
 Java/C\#:
 \begin{beamerboxesrounded}{}
@@ -263,7 +266,8 @@ public class Stack<T>
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}[fragile]{Examples of Generic Programming}
+\begin{frame}[fragile]
+\frametitle{Examples of Generic Programming}
 
 \CPP:
 \begin{beamerboxesrounded}{}
@@ -279,7 +283,8 @@ T& min(T& a, T& b, Compare comp) {
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}{Generic Programming in Haskell}
+\begin{frame}
+\frametitle{Generic Programming in Haskell}
 
 In other words:
 \begin{itemize}INCREMENT
@@ -305,7 +310,8 @@ PAUSE_LINE
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}{Datatypes}
+\begin{frame}
+\frametitle{Datatypes}
 
 \dataD
 
@@ -333,7 +339,8 @@ foundation for looking at the structure.
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}{Structure of Datatypes: Sums}
+\begin{frame}
+\frametitle{Structure of Datatypes: Sums}
 
 %if style /= newcode
 %format AltEx_2
@@ -382,7 +389,8 @@ a_2 = Right
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}{Structure of Datatypes: Sums}
+\begin{frame}
+\frametitle{Structure of Datatypes: Sums}
 
 %if style /= newcode
 %format B_1
@@ -423,7 +431,8 @@ b_3 = R . R
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}{Structure of Datatypes: Products}
+\begin{frame}
+\frametitle{Structure of Datatypes: Products}
 
 %if style /= newcode
 %format FldEx_2
@@ -461,7 +470,8 @@ fldEx_2' = (,)
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}{Structure of Datatypes: Products}
+\begin{frame}
+\frametitle{Structure of Datatypes: Products}
 
 The pair type is the basic binary \alert{product} type. For symmetry with sums,
 we will use the following type:
@@ -492,7 +502,8 @@ fldEx_3' x y z = x :*: (y :*: z)
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}{Structure of Datatypes: Sums of Products}
+\begin{frame}
+\frametitle{Structure of Datatypes: Sums of Products}
 
 To ``sum'' it all up, recall the first datatype example:
 
@@ -521,7 +532,8 @@ naturally, without unnecessary parentheses.
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}{Structure of Datatypes: Isomorphism}
+\begin{frame}
+\frametitle{Structure of Datatypes: Isomorphism}
 
 %if style /= newcode
 %format from_D = "\Varid{from_{" D "}}"
@@ -557,7 +569,8 @@ This allows us to convert terms between (1) the familiar datatype and (2) the
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}{Structure of Datatypes: Constructors}
+\begin{frame}
+\frametitle{Structure of Datatypes: Constructors}
 
 Oh, but there's one more thing...
 
@@ -595,7 +608,8 @@ We could also put additional metadata (e.g.\ fixity) into |C|.
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}{Generic Functions}
+\begin{frame}
+\frametitle{Generic Functions}
 
 Okay, so we have a structure representation. But what can we \emph{do} with it?
 
@@ -617,7 +631,8 @@ Example: |show :: a -> String|
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}{Generic Functions: |show|}
+\begin{frame}
+\frametitle{Generic Functions: |show|}
 
 We define a |show| function for each possible structure case.
 
@@ -659,7 +674,8 @@ show_sum _ show_b (R b) = show_b b
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}{Generic Functions: |show|}
+\begin{frame}
+\frametitle{Generic Functions: |show|}
 
 We can define a |show| function for |Rep_D'| (assuming |show_int|):
 \showD
@@ -674,7 +690,8 @@ show_D show_p = show_Rep_D show_p . from_D'
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}{Generic Functions: |show|}
+\begin{frame}
+\frametitle{Generic Functions: |show|}
 
 \showD
 
@@ -696,7 +713,8 @@ support all combinations, \emph{generically}.
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}{Generic Functions, Generically}
+\begin{frame}
+\frametitle{Generic Functions, Generically}
 
 %if style /= newcode
 %format Rep_T
@@ -732,7 +750,8 @@ to    :: Rep_T -> T
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}{Polymorphic Recursion}
+\begin{frame}
+\frametitle{Polymorphic Recursion}
 
 There are several ways to encode polymorphic recursion. We will use type
 classes.
@@ -761,7 +780,8 @@ class Show a where
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}{Polymorphic Recursion}
+\begin{frame}
+\frametitle{Polymorphic Recursion}
 
 The instances for each structure representation case:
 
@@ -801,7 +821,8 @@ instance (Show a, Show b) => Show (a :+: b) where
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}{Polymorphic Recursion}
+\begin{frame}
+\frametitle{Polymorphic Recursion}
 
 Now, recall |show_Rep_D|:
 
@@ -817,7 +838,8 @@ show_Rep_D' = show
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}{Encoding Isomorphisms}
+\begin{frame}
+\frametitle{Encoding Isomorphisms}
 
 To define the |show| function for |D|, we still need to define another
 function:
@@ -839,7 +861,8 @@ structure representation type |Rep_T|, given an isomorphism between |T| and
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}{Encoding Isomorphisms}
+\begin{frame}
+\frametitle{Encoding Isomorphisms}
 
 We define a class of function pairs.
 
@@ -874,7 +897,8 @@ of taste, really.)
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}{Encoding Isomorphisms}
+\begin{frame}
+\frametitle{Encoding Isomorphisms}
 
 The type class:
 \begin{code}
@@ -902,7 +926,8 @@ you get a type (synonym) |Rep T|.
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}{Encoding Isomorphisms}
+\begin{frame}
+\frametitle{Encoding Isomorphisms}
 
 We need |Generic| instances for every datatype that we want to use with generic
 functions.
@@ -932,7 +957,8 @@ definition of |T|, so these instances can be automatically generated
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}{The Generic |show| Function}
+\begin{frame}
+\frametitle{The Generic |show| Function}
 
 Finally:
 \begin{code}
@@ -942,7 +968,8 @@ gshow = show . from
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}{GP in General}
+\begin{frame}
+\frametitle{GP in General}
 
 \begin{itemize}INCREMENT
 
@@ -976,7 +1003,8 @@ gshow = show . from
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}{A Different Application}
+\begin{frame}
+\frametitle{A Different Application}
 
 \begin{itemize}INCREMENT
 
@@ -991,7 +1019,8 @@ datatypes.
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}[fragile]{Presenting |printf|}
+\begin{frame}[fragile]
+\frametitle{Presenting |printf|}
 
 In C and related languages, we have a function such as:
 \begin{beamerboxesrounded}{}
@@ -1038,7 +1067,8 @@ printf("%Y\n", x); // Y
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}[fragile]{Problems With |printf|}
+\begin{frame}[fragile]
+\frametitle{Problems With |printf|}
 
 \begin{itemize}INCREMENT
 \item No type-checking of arguments
@@ -1051,7 +1081,8 @@ printf("%Y\n", x); // Y
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}{|Text.Printf|}
+\begin{frame}
+\frametitle{|Text.Printf|}
 
 Is this the solution in Haskell?
 \begin{spec}
@@ -1084,7 +1115,8 @@ Apparently, |Text.Printf| is not the solution.
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}{\pkg{xformat}}
+\begin{frame}
+\frametitle{\pkg{xformat}}
 
 The solution:
 \begin{spec}
@@ -1115,7 +1147,8 @@ ghci> printf (String, " W", Int, "rld!\n") "Hello"
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}{Application to HollingBerries}
+\begin{frame}
+\frametitle{Application to HollingBerries}
 
 %if style == newcode
 \begin{code}
@@ -1156,7 +1189,8 @@ PAUSE
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}{Advantages of XFormat}
+\begin{frame}
+\frametitle{Advantages of XFormat}
 
 Just from this example, there are several obvious advantages:
 PAUSE
@@ -1184,7 +1218,8 @@ There is also a non-obvious advantage:
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}{Behind the Scenes}
+\begin{frame}
+\frametitle{Behind the Scenes}
 
 How does \pkg{xformat} work?
 PAUSE
@@ -1212,7 +1247,8 @@ PAUSE
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}{Polyvariadic Functions}
+\begin{frame}
+\frametitle{Polyvariadic Functions}
 
 %if style /= newcode
 %format T_1
@@ -1235,7 +1271,8 @@ functors.
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}{Polyvariadic Functions}
+\begin{frame}
+\frametitle{Polyvariadic Functions}
 
 \begin{itemize}INCREMENT
 
@@ -1259,7 +1296,8 @@ infixr 8 :.:
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}{Polyvariadic Functions}
+\begin{frame}
+\frametitle{Polyvariadic Functions}
 
 The |Functor| instances:
 \begin{code}
@@ -1275,7 +1313,8 @@ instance (Functor f, Functor g) => Functor (f :.: g) where
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}{Polyvariadic Functions}
+\begin{frame}
+\frametitle{Polyvariadic Functions}
 
 \begin{itemize}INCREMENT
 
@@ -1299,7 +1338,8 @@ class Functor f => Apply f where
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}{Polyvariadic Functions}
+\begin{frame}
+\frametitle{Polyvariadic Functions}
 
 The |Apply| instances:
 \begin{code}
@@ -1322,7 +1362,8 @@ instance (Apply f, Apply g) => Apply (f :.: g) where
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}{Polyvariadic Functions}
+\begin{frame}
+\frametitle{Polyvariadic Functions}
 
 Resolve these types in GHCi (using \texttt{kind!} from \(\geq 7.4\)):
 %if style == newcode
@@ -1351,7 +1392,8 @@ PAUSE
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}{Format Functors}
+\begin{frame}
+\frametitle{Format Functors}
 
 With the help of...
 \begin{code}
@@ -1383,7 +1425,8 @@ Hello W0rld!
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}{Format Descriptors}
+\begin{frame}
+\frametitle{Format Descriptors}
 
 But this isn't quite good enough.
 
@@ -1404,7 +1447,8 @@ And the |showf| function:
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}{Format Descriptors}
+\begin{frame}
+\frametitle{Format Descriptors}
 
 \FormatClass
 
@@ -1432,7 +1476,8 @@ instance Format IntF where
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}{Format Descriptors}
+\begin{frame}
+\frametitle{Format Descriptors}
 
 %if style /= newcode
 %format f_1
@@ -1456,7 +1501,8 @@ instance (Format f_1, Format f_2) => Format (f_1, f_2) where
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}{Format Descriptors}
+\begin{frame}
+\frametitle{Format Descriptors}
 
 \begin{itemize}INCREMENT
 
@@ -1488,7 +1534,8 @@ printf = apply . fmap putStr . showf'
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}{Summary of \pkg{xformat}}
+\begin{frame}
+\frametitle{Summary of \pkg{xformat}}
 
 \begin{itemize}INCREMENT
 
@@ -1514,7 +1561,8 @@ format descriptor |f|.
 
 \end{frame}
 %-------------------------------------------------------------------------------
-\begin{frame}{References}
+\begin{frame}
+\frametitle{References}
 
 Generic Programming in Haskell:
 \begin{itemize}
