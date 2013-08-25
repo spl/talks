@@ -3,7 +3,7 @@
 %-------------------------------------------------------------------------------
 % C Preprocessor Directives
 
-#undef DO_PAUSES
+#define DO_PAUSES
 
 #include "pause.h"
 
