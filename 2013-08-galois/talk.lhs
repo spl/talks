@@ -199,14 +199,14 @@ instance (Format f1, Format f2, Format f3, Format f4) => Format (f1, f2, f3, f4)
 %-------------------------------------------------------------------------------
 % Title
 
-\title[GP in Haskell]{Generic Programming \\ in Haskell}
-\subtitle{Presented to the Lambda Luminaries}
+\title[Dissecting Flavors of GP in Haskell]{Dissecting Different Flavors of Generic Programming in One Haskell Universe}
+\subtitle{Presented to Galois}
 
 \author{Sean Leather}
 
 \institute{Utrecht University}
 
-\date[2012-06-21]{21 June 2012}
+\date[2013-08-27]{August 27, 2013}
 
 %-------------------------------------------------------------------------------
 
