@@ -130,7 +130,7 @@ show_Rep_D show_p =
 
 PAUSE
 
-The adjective ``generic'' is heavily overloaded.
+In programming languages, the adjective ``generic'' is heavily overloaded.
 
 PAUSE_LINE
 
