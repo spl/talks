@@ -3,7 +3,7 @@
 %-------------------------------------------------------------------------------
 % C Preprocessor Directives
 
-#define DO_PAUSES
+#undef DO_PAUSES
 
 #include "pause.h"
 
@@ -59,8 +59,6 @@ import qualified Text.Printf as TP
 %if style /= newcode
 %format Alt_1
 %format Alt_2
-%format Rep_D
-%format Rep_D' = Rep_D
 %endif
 
 \newcommand{\dataD}{%
@@ -72,16 +70,15 @@ data D (PURPLE(p)) = (GREEN(Alt_1)) | (GREEN(Alt_2)) (BLUE(Int)) (BLUE(p))
 %if style /= newcode
 %format show_unit = "\Varid{show_{U}}"
 %format show_con = "\Varid{show_{C}}"
+%format show_k = "\Varid{show_{K}}"
 %format show_prod = "\Varid{show_{\times}}"
 %format show_sum = "\Varid{show_{+}}"
 %format show_int = "\Varid{show_{Int}}"
-%format show_a = "\Varid{show_{a}}"
-%format show_b = "\Varid{show_{b}}"
-%format show_Rep_D = "\Varid{show_{" Rep_D' "}}"
-%format show_Rep_D' = "\Varid{show_{" Rep_D' "}^{\prime}}"
-%format show_D = "\Varid{show_{" D "}}"
-%format show_D' = "\Varid{show_{" D "}^{\prime}}"
-%format show_p = "\Varid{show_{" p "}}"
+%format show_a
+%format show_b
+%format Rep_E
+%format show_Rep_E = "\Varid{show_{" Rep_E "}}"
+%format show_E
 %endif
 
 %if style == newcode
@@ -91,11 +88,22 @@ show_int = show
 \end{code}
 %endif
 
-\newcommand{\showD}{%
+
+\newcommand{\RepE}{%
 \begin{code}
-show_Rep_D :: (p -> String) -> Rep_D' p -> String
-show_Rep_D show_p =
-  show_sum (show_con show_unit) (show_con (show_prod show_int show_p))
+type Rep_E a = (GREEN(C)) U :+: (GREEN(C)) ((BLUE(K)) a :*: (BLUE(K)) (E a) :*: (BLUE(K)) Int)
+\end{code}
+}
+
+\newcommand{\showRepE}{%
+\begin{code}
+show_Rep_E  ::  (a -> String) -> ((a -> String) -> E a -> String)
+            ->  Rep_E a -> String
+
+show_Rep_E show_a show_E =
+  show_sum  (show_con  show_unit)
+            (show_con  (show_prod  (show_k show_a)
+                                   (show_prod (show_k (show_E show_a)) (show_k show_int))))
 \end{code}
 }
 
@@ -434,8 +442,7 @@ data K a = K a
 
 PAUSE_LINE
 
-There are other features of datatypes, but we will consider only the above as a
-foundation for looking at the structure.
+Note: There are other features of datatypes, but we consider only the above.
 
 \end{frame}
 %-------------------------------------------------------------------------------
@@ -456,9 +463,7 @@ data E a = (GREEN(E_1)) | (GREEN(E_2)) (BLUE(a)) (BLUE((E a))) (BLUE(Int))
 PAUSE_LINE
 
 The corresponding \alert{structure representation type}:
-\begin{code}
-type Rep_E a = (GREEN(C)) U :+: (GREEN(C)) ((BLUE(K)) a :*: (BLUE(K)) (E a) :*: (BLUE(K)) Int)
-\end{code}
+\RepE{}
 
 PAUSE_LINE
 
@@ -508,87 +513,92 @@ to_E  (R (C "E2" ((K x) :*: (K e) :*: (K i))))  = E_2 x e i
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{Structure of Datatypes: Constructors}
+\frametitle{Converting Between Types: Isomorphism}
 
-Oh, but there's one more thing...
-
-PAUSE
-
-You may have noticed the representation lacked any information about the
-constructors (e.g.\ the names).
+For convenience, we join the representation type and isomorphism in a type class
+|Generic| with an associated type synonym |Rep|.
+\begin{code}
+class Generic a where
+  type Rep a
+  from  :: a -> Rep a
+  to    :: Rep a -> a
+\end{code}
 
 PAUSE_LINE
 
-That's easily repaired with another datatype:
-
-PAUSE_LINE
-
-We modify the representation to store constructor names:
+The instance for |E|:
 \begin{code}
-type Rep_D' (PURPLE(p)) = C (BLUE(U)) :+: C ((BLUE(Int)) :*: (BLUE(p)))
-
-from_D'  Alt_1        = L (C "Alt1" U)
-from_D'  (Alt_2 i p)  = R (C "Alt2" (i :*: p))
+instance Generic (E a) where
+  type Rep (E a) = Rep_E a
+  from  = from_E
+  to    = to_E
 \end{code}
-%if style == newcode
-\begin{code}
-to_D'  (L (C nm U))          = Alt_1
-to_D'  (R (C nm (i :*: p)))  = Alt_2 i p
-\end{code}
-%endif
-
-PAUSE
-
-We could also put additional metadata (e.g.\ fixity) into |C|.
 
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
 \frametitle{Generic Functions}
 
-Okay, so we have a structure representation. But what can we \emph{do} with it?
-
-PAUSE_LINE
-
-\alert{Generic functions}
+A \alert{generic function}
 \begin{itemize}INCREMENT
 
-\item Defined on each possible case of the structure representation
+\item Is defined on each case of the structure representation and
 
-\item Work for every datatype that has an isomorphism with a structure
-representation
+\item Works for every datatype that has a structure representation and
+isomorphism.
 
 \end{itemize}
 
 PAUSE_LINE
 
-Example: |show :: a -> String|
+%if style /= newcode
+%format show_Rep_a = "\Varid{show_{Rep\ a}}"
+%endif
+
+Example: |show_Rep_a :: a -> String|
+
+\begin{itemize}
+\item We will define a |show| function for each case.
+\end{itemize}
 
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{Generic Functions: |show|}
+\frametitle{Defining a Generic Function: |show|}
 
-We define a |show| function for each possible structure case.
-
-PAUSE_LINE
-
-\begin{columns}
-\column{.38\textwidth}
 Unit:
 \begin{code}
 show_unit :: U -> String
 show_unit U = ""
 \end{code}
-\column{.58\textwidth}
-PAUSE
+
+PAUSE_LINE
+
 Constructor name:
 \begin{code}
 show_con :: (a -> String) -> C a -> String
-show_con show_a (C nm a) =
-  "(" ++ nm ++ " " ++ show_a a ++ ")"
+show_con show_a (C nm a) = "(" ++ nm ++ " " ++ show_a a ++ ")"
 \end{code}
-\end{columns}
+
+PAUSE_LINE
+
+Field:
+\begin{code}
+show_k :: (a -> String) -> K a -> String
+show_k show_a (K a) = show_a a
+\end{code}
+
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Defining a Generic Function: |show|}
+
+Binary sum:
+\begin{code}
+show_sum :: (a -> String) -> (b -> String) -> a :+: b -> String
+show_sum show_a _ (L a) = show_a a
+show_sum _ show_b (R b) = show_b b
+\end{code}
 
 PAUSE_LINE
 
@@ -598,73 +608,63 @@ show_prod :: (a -> String) -> (b -> String) -> a :*: b -> String
 show_prod show_a show_b (a :*: b) = show_a a ++ " " ++ show_b b
 \end{code}
 
-PAUSE_LINE
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Defining a Generic Function: |show|}
 
-Binary sum:
+Recall:
+\RepE{}
+
+LINE
+
+We can define a |show| function (assuming |show_int|):
+\showRepE{}
+
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Defining a Generic Function: |show|}
+
+\showRepE{}
+
+LINE
+
+The |show_E| function itself is just an isomorphism away:
 \begin{code}
-show_sum :: (a -> String) -> (b -> String) -> a :+: b -> String
-show_sum show_a _ (L a) = show_a a
-show_sum _ show_b (R b) = show_b b
+show_E :: (a -> String) -> E a -> String
+show_E show_a = show_Rep_E show_a show_E . from_E
 \end{code}
 
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{Generic Functions: |show|}
+\frametitle{Defining a Generic Function: |show|}
 
-We can define a |show| function for |Rep_D'| (assuming |show_int|):
-\showD
-
-PAUSE_LINE
-
-The |show| function for |D| is just a hop away:
-\begin{code}
-show_D :: (p -> String) -> D p -> String
-show_D show_p = show_Rep_D show_p . from_D'
-\end{code}
-
-\end{frame}
-%-------------------------------------------------------------------------------
-\begin{frame}
-\frametitle{Generic Functions: |show|}
-
-\showD
+\showRepE{}
 
 LINE
 
 Some observations:
 \begin{itemize}INCREMENT
 
-\item This is a sort of predictable pattern (or recipe) for defining |show|
-functions on structure representations.
+\item This is \textbf{not} a generic function.
 
-\item The functions are recursive but not in the usual way because the argument
-types differ.
+\item It is defined on the structure of |E|, not on datatypes in general.
 
-\item Each datatype can have a unique structure representation, and we want to
-support all combinations, \emph{generically}.
+\item It demonstrates a predictable pattern for defining the generic function.
 
 \end{itemize}
 
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{Generic Functions, Generically}
+\frametitle{Defining a Generic Function: |show|}
 
 %if style /= newcode
 %format Rep_T
 %endif
 
-In order to jump into ``true'' genericity (where the structure is a parameter
-instead of a pattern), we need several addtional things:
-
-PAUSE
-
-\begin{itemize}INCREMENT
-
-\item \alert{Polymorphic recursion} -- functions with a common scheme that
-reference each other and allow types to change in the calls
-PAUSE
 \begin{spec}
 show_unit  ::         U         -> String
 show_con   :: ... =>  C a       -> String
@@ -672,14 +672,13 @@ show_sum   :: ... =>  a :+: b   -> String
 ...
 \end{spec}
 
-\item A common encoding for isomorphisms
-PAUSE
-\begin{spec}
-data  T      = ...  -- User-defined datatype
-type  Rep_T  = ...  -- Structure representation
-from  :: T -> Rep_T
-to    :: Rep_T -> T
-\end{spec}
+\begin{itemize}INCREMENT
+
+\item The |show_...| functions can be thought of as recursive but not in the
+usual way because the argument types differ.
+
+\item \alert{Polymorphic recursion} -- functions with different types that have
+a common scheme that reference each other
 
 \end{itemize}
 
@@ -761,15 +760,15 @@ instance (Show a, Show b) => Show (a :+: b) where
 
 Now, recall |show_Rep_D|:
 
-\showD
+\showRepE{}
 
 PAUSE_LINE
 
 Compare to the new version that is now possible:
-\begin{code}
+\begin{spec}
 show_Rep_D' :: Show p => Rep_D' p -> String
 show_Rep_D' = show
-\end{code}
+\end{spec}
 
 \end{frame}
 %-------------------------------------------------------------------------------
@@ -778,10 +777,10 @@ show_Rep_D' = show
 
 To define the |show| function for |D|, we still need to define another
 function:
-\begin{code}
+\begin{spec}
 show_D' :: Show p => D p -> String
 show_D' = show_Rep_D' . from_D'
-\end{code}
+\end{spec}
 
 PAUSE_LINE
 
@@ -836,12 +835,12 @@ of taste, really.)
 \frametitle{Encoding Isomorphisms}
 
 The type class:
-\begin{code}
+\begin{spec}
 class Generic a where
   type Rep a
   from  :: a -> Rep a
   to    :: Rep a -> a
-\end{code}
+\end{spec}
 
 PAUSE
 
@@ -871,12 +870,12 @@ PAUSE_LINE
 
 The instance for |D| uses definitions that we've already seen:
 
-\begin{code}
+\begin{spec}
 instance Generic (D p) where
   type Rep (D p) = Rep_D' p
   from  = from_D'
   to    = to_D'
-\end{code}
+\end{spec}
 
 PAUSE
 
