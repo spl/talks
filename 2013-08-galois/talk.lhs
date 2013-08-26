@@ -47,25 +47,11 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE DefaultSignatures #-}
 module Talk where
-import qualified Text.Printf as TP
+import Prelude hiding (Show(show))
 \end{code}
 %endif
-
-%if style /= newcode
-%format TP.printf = printf
-%endif
-
-%if style /= newcode
-%format Alt_1
-%format Alt_2
-%endif
-
-\newcommand{\dataD}{%
-\begin{code}
-data D (PURPLE(p)) = (GREEN(Alt_1)) | (GREEN(Alt_2)) (BLUE(Int)) (BLUE(p))
-\end{code}
-}
 
 %if style /= newcode
 %format show_unit = "\Varid{show_{U}}"
@@ -74,10 +60,13 @@ data D (PURPLE(p)) = (GREEN(Alt_1)) | (GREEN(Alt_2)) (BLUE(Int)) (BLUE(p))
 %format show_prod = "\Varid{show_{\times}}"
 %format show_sum = "\Varid{show_{+}}"
 %format show_int = "\Varid{show_{Int}}"
+%format show_char = "\Varid{show_{Char}}"
+%format show_ = "\Varid{show_{?}}"
 %format show_a
 %format show_b
 %format Rep_E
 %format show_Rep_E = "\Varid{show_{" Rep_E "}}"
+%format show_Rep_E' = "\Varid{show_{" Rep_E "}}"
 %format show_E
 %endif
 
@@ -85,6 +74,13 @@ data D (PURPLE(p)) = (GREEN(Alt_1)) | (GREEN(Alt_2)) (BLUE(Int)) (BLUE(p))
 \begin{code}
 show_int :: Int -> String
 show_int = show
+instance Show Int where
+  show = show_int
+
+show_char :: Char -> String
+show_char = show
+instance Show Char where
+  show = show_char
 \end{code}
 %endif
 
@@ -633,7 +629,7 @@ LINE
 The |show_E| function itself is just an isomorphism away:
 \begin{code}
 show_E :: (a -> String) -> E a -> String
-show_E show_a = show_Rep_E show_a show_E . from_E
+show_E show_a = show_Rep_E show_a show_E . (PURPLE(from_E))
 \end{code}
 
 \end{frame}
@@ -661,21 +657,17 @@ Some observations:
 \begin{frame}
 \frametitle{Defining a Generic Function: |show|}
 
-%if style /= newcode
-%format Rep_T
-%endif
-
+Consider these typical expressions and their types:
 \begin{spec}
-show_unit  ::         U         -> String
-show_con   :: ... =>  C a       -> String
-show_sum   :: ... =>  a :+: b   -> String
-...
+show_con   show_unit                             :: C U                 -> String
+show_prod  (show_k show_int) (show_k show_char)  :: (K Int :*: K Char)  -> String
 \end{spec}
 
 \begin{itemize}INCREMENT
 
-\item The |show_...| functions can be thought of as recursive but not in the
-usual way because the argument types differ.
+\item |show_| functions call other |show_| functions.
+
+\item They can be considered recursive but not in the usual way.
 
 \item \alert{Polymorphic recursion} -- functions with different types that have
 a common scheme that reference each other
@@ -685,21 +677,17 @@ a common scheme that reference each other
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{Polymorphic Recursion}
+\frametitle{Defining a Generic Function: |show|}
 
-There are several ways to encode polymorphic recursion. We will use type
-classes.
+There are several ways to encode polymorphic recursion. We use type classes.
 
 PAUSE
 
 \begin{itemize}INCREMENT
 
-\item Standard classes already use polymorphic recursion for deriving instances:
-|Show|, |Eq|, etc.
-
 \item The class declaration specifies the type signature.
 
-\item Each recursive case is specified by an instance of the class.
+\item Each recursive (type) case is specified by an instance of the class.
 
 \end{itemize}
 
@@ -715,34 +703,16 @@ class Show a where
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{Polymorphic Recursion}
+\frametitle{Defining a Generic Function: |show|}
 
-The instances for each structure representation case:
+Some of the instances for each structure representation case:
 
 PAUSE_LINE
 
-\begin{columns}
-\column{.38\textwidth}
-Unit:
-\begin{code}
-instance Show U where
-  show = show_unit
-\end{code}
-\column{.58\textwidth}
-PAUSE
 Constructor name:
 \begin{code}
 instance Show a => Show (C a) where
   show = show_con show
-\end{code}
-\end{columns}
-
-PAUSE_LINE
-
-Binary product:
-\begin{code}
-instance (Show a, Show b) => Show (a :*: b) where
-  show = show_prod show show
 \end{code}
 
 PAUSE_LINE
@@ -753,151 +723,76 @@ instance (Show a, Show b) => Show (a :+: b) where
   show = show_sum show show
 \end{code}
 
+PAUSE_LINE
+
+The remaining instances are straightforward.
+
+%if style == newcode
+Unit:
+\begin{code}
+instance Show U where
+  show = show_unit
+\end{code}
+
+Field:
+\begin{code}
+instance Show a => Show (K a) where
+  show = show_k show
+\end{code}
+
+Binary product:
+\begin{code}
+instance (Show a, Show b) => Show (a :*: b) where
+  show = show_prod show show
+\end{code}
+%endif
+
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{Polymorphic Recursion}
+\frametitle{Defining a Generic Function: |show|}
 
-Now, recall |show_Rep_D|:
-
+Now, compare:
 \showRepE{}
 
 PAUSE_LINE
 
-Compare to the new version that is now possible:
-\begin{spec}
-show_Rep_D' :: Show p => Rep_D' p -> String
-show_Rep_D' = show
-\end{spec}
-
-\end{frame}
-%-------------------------------------------------------------------------------
-\begin{frame}
-\frametitle{Encoding Isomorphisms}
-
-To define the |show| function for |D|, we still need to define another
-function:
-\begin{spec}
-show_D' :: Show p => D p -> String
-show_D' = show_Rep_D' . from_D'
-\end{spec}
-
-PAUSE_LINE
-
-Next goal:
-\begin{itemize}INCREMENT
-
-\item Define one |show| function that knows how to convert any type |T| to its
-structure representation type |Rep_T|, given an isomorphism between |T| and
-|Rep_T|.
-
-\end{itemize}
-
-\end{frame}
-%-------------------------------------------------------------------------------
-\begin{frame}
-\frametitle{Encoding Isomorphisms}
-
-We define a class of function pairs.
-
-\begin{itemize}INCREMENT
-
-\item We again use a type class, but with the addition of a \emph{type family}.
-
-\item Each function pair implements an isomorphism between a datatype |T| and
-its structure representation |Rep_T|:
-\begin{columns}
-\column{.28\textwidth}
-\begin{spec}
-from :: T -> Rep_T
-\end{spec}
-\column{.28\textwidth}
-\begin{spec}
-to :: Rep_T -> T
-\end{spec}
-\end{columns}
-
-\item Each requires two types, so each instance must have two types (unlike the
-|Show| instances which needed only the structure representation type).
-
-\item |Rep_T| is precisely determined by |T|, so really we only need one unique
-type and a second type derivable from the first.
-
-\item In this case, a (1) multiparameter type class with a functional dependency
-and a (2) type class with a type family are equally expressive. (It's a matter
-of taste, really.)
-
-\end{itemize}
-
-\end{frame}
-%-------------------------------------------------------------------------------
-\begin{frame}
-\frametitle{Encoding Isomorphisms}
-
-The type class:
-\begin{spec}
-class Generic a where
-  type Rep a
-  from  :: a -> Rep a
-  to    :: Rep a -> a
-\end{spec}
-
-PAUSE
-
-\begin{itemize}INCREMENT
-
-\item |Rep| is a type family or, more precisely, an associated type synonym.
-
-\item Think of |Rep| as a function on types. Given a unique type (index) |T|,
-you get a type (synonym) |Rep T|.
-
-\item Note that |Rep T| need not be different from |Rep U| even though |T| and
-|U| are different.
-
-\item Concretely: two datatypes may have the same representation.
-
-\end{itemize}
-
-\end{frame}
-%-------------------------------------------------------------------------------
-\begin{frame}
-\frametitle{Encoding Isomorphisms}
-
-We need |Generic| instances for every datatype that we want to use with generic
-functions.
-
-PAUSE_LINE
-
-The instance for |D| uses definitions that we've already seen:
-
-\begin{spec}
-instance Generic (D p) where
-  type Rep (D p) = Rep_D' p
-  from  = from_D'
-  to    = to_D'
-\end{spec}
-
-PAUSE
-
-\begin{itemize}INCREMENT
-
-\item Other instances are defined similarly.
-
-\item In fact, |Rep T|, |from|, and |to| are precisely determined by the
-definition of |T|, so these instances can be automatically generated
-(e.g.\ using Template Haskell or a preprocessor).
-
-\end{itemize}
-
-\end{frame}
-%-------------------------------------------------------------------------------
-\begin{frame}
-\frametitle{The Generic |show| Function}
-
-Finally:
+To:
 \begin{code}
-gshow :: (Show (Rep a), Generic a) => a -> String
-gshow = show . from
+show_Rep_E' :: (Show a, Show (E a)) => Rep_E a -> String
+show_Rep_E' = show
+\end{code}
+
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Defining a Generic Function: |show|}
+
+Finally, we can use a slightly different |Show| class to support generic
+functions for any type that has a representation.
+
+PAUSE
+
+\begin{code}
+class Show a where
+
+  show :: a -> String
+
+  default show :: (Show (Rep a), Generic a) => a -> String
+  show = show . from
+\end{code}
+\begin{itemize}
+
+\item This uses default signatures: if type |a| has the instances |Show (Rep
+a)| and |Generic a|, then the given definition is used.
+
+\end{itemize}
+
+PAUSE_LINE
+
+To define the instance for |E|:
+\begin{code}
+instance Show a => Show (E a)
 \end{code}
 
 \end{frame}
