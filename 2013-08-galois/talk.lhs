@@ -45,10 +45,9 @@
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE TypeSynonymInstances #-}
-{-# LANGUAGE UndecidableInstances #-}
-{-# LANGUAGE DefaultSignatures #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE OverlappingInstances #-}
+{-# LANGUAGE DefaultSignatures #-}
 module Talk where
 import Prelude hiding (Show(show))
 \end{code}
@@ -274,7 +273,8 @@ Many different implementations:
 
 \begin{itemize}INCREMENT
 \item Scrap Your Boilerplate (SYB) -- included with GHC for a long time
-\item Extensible and Modular Generics for the Masses (EMGM)
+\item Uniplate -- similar to SYB but faster and less expressive
+\item EMGM -- fast sums-of-products
 \item Regular -- recursion schemes
 \item Multirec -- mutually recursive datatypes
 \item Generic Deriving -- available in GHC \(\geq\) 7.2, similar to Instant Generics
@@ -779,7 +779,7 @@ class Show a where
 
   show :: a -> String
 
-  default show :: (Show (Rep a), Generic a) => a -> String
+  default show :: (Generic a, Show (Rep a)) => a -> String
   show = show . from
 \end{code}
 \begin{itemize}
@@ -829,6 +829,55 @@ class Uniplate a where
 
   default descend :: (Generic a, Uniplate' (Rep a) a) => (a -> a) -> a -> a
   descend f = to . descend' f . from
+\end{code}
+
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{???}
+
+\begin{code}
+type family Alg a r
+
+type instance Alg U             r = r
+type instance Alg (K a)         r = Either a r -> r
+type instance Alg (C a)         r = Alg a r
+type instance Alg (a :+: b)     r = (Alg a r, Alg b r)
+type instance Alg (K a :*: b)   r = Either a r -> Alg b r
+
+class Fold' a c where
+  fold' :: proxy c -> Alg (Rep c) r -> Alg a r -> a -> r
+
+instance Fold' U c where
+  fold' _ _ alg U = alg
+
+instance Fold a => Fold' (K a) a where
+  fold' p palg alg (K a) = alg (Right (fold palg a))
+
+instance Fold' (K a) c where
+  fold' p _ alg (K a) = alg (Left a)
+
+instance Fold' a c => Fold' (C a) c where
+  fold' p palg alg (C _ a) = fold' p palg alg a
+
+instance (Fold' a c, Fold' b c) => Fold' (a :+: b) c where
+  fold' p palg (alg, _) (L a) = fold' p palg alg a
+  fold' p palg (_, alg) (R b) = fold' p palg alg b
+
+instance (Fold a, Fold' b a) => Fold' (K a :*: b) a where
+  fold' p palg alg (K a :*: b) = fold' p palg (alg (Right (fold palg a))) b
+
+instance Fold' b c => Fold' (K a :*: b) c where
+  fold' p palg alg (K a :*: b) = fold' p palg (alg (Left a)) b
+
+class (Generic a, Fold' (Rep a) a) => Fold a where
+  fold :: Alg (Rep a) r -> a -> r
+  fold alg x = fold' (Just x) alg alg (from x)
+\end{code}
+
+\begin{code}
+instance Uniplate (E a)
+instance Fold (E a)
 \end{code}
 
 \end{frame}
