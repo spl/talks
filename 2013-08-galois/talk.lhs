@@ -48,6 +48,7 @@
 {-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE DefaultSignatures #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 module Talk where
 import Prelude hiding (Show(show))
 \end{code}
@@ -790,9 +791,44 @@ a)| and |Generic a|, then the given definition is used.
 
 PAUSE_LINE
 
-To define the instance for |E|:
+The instance for |E|:
 \begin{code}
 instance Show a => Show (E a)
+\end{code}
+
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{???}
+
+\begin{code}
+class Uniplate' a r where
+  descend' :: (r -> r) -> a -> a
+
+instance Uniplate' U a where
+  descend' _ U = U
+
+instance Uniplate a => Uniplate' (K a) a where
+  descend' f (K a) = K (f a)
+
+instance Uniplate' (K a) r where
+  descend' _ (K a) = K a
+
+instance Uniplate' a r => Uniplate' (C a) r where
+  descend' f (C nm a) = C nm (descend' f a)
+
+instance (Uniplate' a r, Uniplate' b r) => Uniplate' (a :+: b) r where
+  descend' f (L a) = L (descend' f a)
+  descend' f (R b) = R (descend' f b)
+
+instance (Uniplate' a r, Uniplate' b r) => Uniplate' (a :*: b) r where
+  descend' f (a :*: b) = descend' f a :*: descend' f b
+
+class Uniplate a where
+  descend :: (a -> a) -> a -> a
+
+  default descend :: (Generic a, Uniplate' (Rep a) a) => (a -> a) -> a -> a
+  descend f = to . descend' f . from
 \end{code}
 
 \end{frame}
