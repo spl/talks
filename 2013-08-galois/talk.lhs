@@ -49,9 +49,6 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Talk where
 import qualified Text.Printf as TP
-infixr 5 :+:
-infixr 6 :*:
-data U = U
 \end{code}
 %endif
 
@@ -151,7 +148,7 @@ A higher level of abstraction than ``normally'' available
 
 PAUSE_LINE
 
-\begin{block}{The technique is also often the same.}
+\begin{block}{The technique is also often similar.}
 Some form of parameterization and instantiation
 \end{block}
 
@@ -171,6 +168,13 @@ public class Stack<T>
 \end{lstlisting}
 \end{beamerboxesrounded}
 
+PAUSE_LINE
+
+In other words:
+\begin{itemize}
+\item Java-style generics \(\approx\) parametric polymorphism
+\end{itemize}
+
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}[fragile]
@@ -188,56 +192,245 @@ T& min(T& a, T& b, Compare comp) {
 \end{lstlisting}
 \end{beamerboxesrounded}
 
+PAUSE_LINE
+
+In other words:
+\begin{itemize}
+\item \CPP{} templates \(\approx\) ad-hoc polymorphism
+\end{itemize}
+
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
 \frametitle{Generic Programming in Haskell}
 
-In other words:
+``Generic programming'':
 \begin{itemize}INCREMENT
-\item Java-style generics \(\approx\) parametric polymorphism
-\item \CPP{} templates \(\approx\) ad-hoc polymorphism
+\item For other languages, the term tends to be used for late additions.
+\item Parametric and ad-hoc polymorphism were available in Haskell from the beginning.
 \end{itemize}
 
 PAUSE_LINE
 
-In Haskell:
+In Haskell, we have come to use ``generic programming'' for
+\alert{datatype-generic programming} (a.k.a.\ ``polytypism'' or
+``shape/structure polymorphism'').
+
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Datatype-Generic Programming}
+
+What is datatype-generic programming?
 \begin{itemize}INCREMENT
-\item Both forms already exist.
-\item We don't call them generics because they're native to the language.
+\item Parameterize a function over the \emph{structure} of datatypes
+\item Instantiate the function with a particular type
 \end{itemize}
 
 PAUSE_LINE
 
-\alert{Datatype-generic programming}:
+The result is a function that
 \begin{itemize}INCREMENT
-\item Abstract over the \emph{structure of a datatype}
-\item Also known as ``polytypism'' and ``shape-/structure-polymorphism''
+\item \textbf{works with many types} (polymorphism) but
+\item \textbf{uses knowledge of the type} (unlike parametric) and
+\item \textbf{need not be redefined for every type} (unlike ad-hoc).
 \end{itemize}
 
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{Datatypes}
+\frametitle{Generic Functions}
 
-\dataD
+Applications
+\begin{itemize}INCREMENT
+\item Pretty-printing (e.g.\ |show|), parsing (e.g.\ |read|)
+\item Compression, serialization, marshalling (and their inverses)
+\item Comparison, equality
+\item (Co-)recursion, map, zip, zippers
+\item Traversals, queries, updates
+\end{itemize}
+
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Generic Platforms}
+
+Many different implementations:
+\begin{itemize}INCREMENT
+
+\item Preprocessors:
+
+\begin{itemize}INCREMENT
+\item PolyP
+\item Generic Haskell
+\end{itemize}
+
+\item Libraries
+
+\begin{itemize}INCREMENT
+\item Scrap Your Boilerplate (SYB) -- included with GHC for a long time
+\item Extensible and Modular Generics for the Masses (EMGM)
+\item Regular -- recursion schemes
+\item Multirec -- mutually recursive datatypes
+\item Generic Deriving -- available in GHC \(\geq\) 7.2, similar to Instant Generics
+\item (and many, many more)
+\end{itemize}
+
+\end{itemize}
+
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Generic Flavors}
+
+The implementations can be grouped into flavors depending on how they view the
+structure of a datatype.
 
 PAUSE_LINE
 
+Some flavors (or views):
+\begin{description}INCREMENT[Sums-of-products]
+
+\item[Spine] A constructor is a sequence of types. \\ Example: SYB
+
+\item[Sums-of-products] A datatype is a collection of alternative tuples of
+types.
+\\ Example: Generic Deriving
+
+\item[Fixed point] A datatype is a sums-of-products with recursive points.
+\\ Example: Multirec
+
+\end{description}
+
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Dissecting a Datatype: Sums-of-Products}
+
+%if style /= newcode
+%format T_sum
+%format A_1
+%format A_2
+%endif
+
+\begin{code}
+data T_sum = (GREEN(A_1)) | (GREEN(A_2))
+\end{code}
+
+LINE
+
 A datatype can have:
-\begin{itemize}INCREMENT
-\item \PURPLE{Parameters}: type variables (\(\geq 0\))
+\begin{itemize}
 \item \GREEN{Alternatives}: unique constructors (\(\geq 0\))
+\end{itemize}
+
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Dissecting a Datatype: Sums-of-Products}
+
+%if style /= newcode
+%format T_prod
+%format P_2
+%endif
+
+\begin{code}
+data T_prod = (GREEN(P_2)) (BLUE(Char)) (BLUE(Int))
+\end{code}
+
+LINE
+
+A datatype can have:
+\begin{itemize}
 \item \BLUE{Fields}: types for each constructor (\(\geq 0\))
 \end{itemize}
 
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Dissecting a Datatype: Sums-of-Products}
+
+Other features that are modeled:
+\begin{itemize}
+\item Constant types: each type in a field
+\item Parameters: type variables (\(\geq 0\))
+\end{itemize}
+
 PAUSE_LINE
 
-Non-syntactic features:
-\begin{itemize}INCREMENT
+Features that are not modeled:
+\begin{itemize}
 \item Recursion
-\item Nesting
+\item Nesting (though it can be)
 \end{itemize}
+
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Modeling a Sum}
+
+To model (nested) alternatives:
+\begin{spec}
+data Either a b = Left a | Right b
+\end{spec}
+
+PAUSE_LINE
+
+For syntactic elegance:
+\begin{code}
+data a :+: b = L a | R b
+\end{code}
+%if style == newcode
+\begin{code}
+infixr 5 :+:
+\end{code}
+%endif
+
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Modeling a Product}
+
+To model (nested) fields:
+\begin{spec}
+data (,) a b = (,) a b
+\end{spec}
+
+PAUSE_LINE
+
+For syntactic elegance:
+\begin{code}
+data a :*: b = a :*: b
+\end{code}
+%if style == newcode
+\begin{code}
+infixr 6 :*:
+\end{code}
+%endif
+
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Modeling Other Structures}
+
+A constructor without fields:
+\begin{code}
+data U = U
+\end{code}
+
+PAUSE_LINE
+
+A constructor name:
+\begin{code}
+data C a = C String a
+\end{code}
+
+PAUSE_LINE
+
+A field type:
+\begin{code}
+data K a = K a
+\end{code}
 
 PAUSE_LINE
 
@@ -247,232 +440,70 @@ foundation for looking at the structure.
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{Structure of Datatypes: Sums}
+\frametitle{Modeling an Example}
 
 %if style /= newcode
-%format AltEx_2
-%format AltEx_2' = "\Conid{{AltEx}_{2}^{\prime}}"
-%format AltEx_3
-%format AltEx_3' = "\Conid{{AltEx}_{3}^{\prime}}"
-%format A_1
-%format A_2
-%format a_1
-%format a_2
+%format E_1
+%format E_2
+%format Rep_E
 %endif
 
-First structural element: alternatives.
+An example datatype:
 \begin{code}
-data AltEx_2 = (GREEN(A_1)) (BLUE(Int)) | (GREEN(A_2)) (BLUE(Char))
+data E a = (GREEN(E_1)) | (GREEN(E_2)) (BLUE(a)) (BLUE((E a))) (BLUE(Int))
 \end{code}
 
 PAUSE_LINE
 
-Note that the above is similar to a standard type:
-\begin{spec}
-data Either (PURPLE(a)) (PURPLE(b)) = (GREEN(Left)) (BLUE(a)) | (GREEN(Right)) (BLUE(b))
-\end{spec}
-
-PAUSE_LINE
-
-And we can, in fact, model |AltEx_2| as:
+The corresponding \alert{structure representation type}:
 \begin{code}
-type AltEx_2' = Either (BLUE(Int)) (BLUE(Char))
-\end{code}
-
-with the following ``smart'' constructors:
-
-\begin{columns}
-\column{.48\textwidth}
-\begin{code}
-a_1 :: Int -> AltEx_2'
-a_1 = Left
-\end{code}
-\column{.48\textwidth}
-\begin{code}
-a_2 :: Char -> AltEx_2'
-a_2 = Right
-\end{code}
-\end{columns}
-
-\end{frame}
-%-------------------------------------------------------------------------------
-\begin{frame}
-\frametitle{Structure of Datatypes: Sums}
-
-%if style /= newcode
-%format B_1
-%format B_2
-%format B_3
-%format b_1
-%format b_2
-%format b_3
-%endif
-
-When talking about alternatives in structural sense, we often call them
-\alert{sums}. |Either| is the basic binary sum type. For conciseness, we use
-this (identical) binary sum type:
-
-\begin{code}
-data (PURPLE(a)) :+: (PURPLE(b)) = (GREEN(L)) (BLUE(a)) | (GREEN(R)) (BLUE(b))
-\end{code}
-
-PAUSE_LINE
-
-What about a type with \(< 2\) alternatives?
-\begin{code}
-data AltEx_3 = (GREEN(B_1)) (BLUE(Int)) | (GREEN(B_2)) (BLUE(Char)) | (GREEN(B_3)) (BLUE(Float))
-\end{code}
-
-PAUSE_LINE
-
-The simplest solution is to nest one binary sum inside another:
-\begin{code}
-type AltEx_3' = (BLUE(Int)) :+: ((BLUE(Char)) :+: (BLUE(Float)))
-\end{code}
-
-Note that:
-\begin{code}
-b_3 :: Float -> AltEx_3'
-b_3 = R . R
-\end{code}
-
-\end{frame}
-%-------------------------------------------------------------------------------
-\begin{frame}
-\frametitle{Structure of Datatypes: Products}
-
-%if style /= newcode
-%format FldEx_2
-%format FldEx_2' = "\Conid{{FldEx}_{2}^{\prime}}"
-%format fldEx_2' = "\Varid{{fldEx}_{2}^{\prime}}"
-%format FldEx_3
-%format FldEx_3' = "\Conid{{FldEx}_{3}^{\prime}}"
-%format fldEx_3' = "\Varid{{fldEx}_{3}^{\prime}}"
-%endif
-
-Next: fields.
-\begin{code}
-data FldEx_2 = (GREEN(FldEx_2)) (BLUE(Int)) (BLUE(Char))
-\end{code}
-
-PAUSE_LINE
-
-Again, note the similarity to a standard type, the pair:
-\begin{spec}
-data (,) (PURPLE(a)) (PURPLE(b)) = (GREEN((,))) (BLUE(a)) (BLUE(b))
-\end{spec}
-
-PAUSE_LINE
-
-And again, we model |FldEx_2| similarly:
-\begin{code}
-type FldEx_2' = (,) (BLUE(Int)) (BLUE(Char))
-\end{code}
-
-with the smart constructor:
-\begin{code}
-fldEx_2' :: (BLUE(Int)) -> (BLUE(Char)) -> FldEx_2'
-fldEx_2' = (,)
-\end{code}
-
-\end{frame}
-%-------------------------------------------------------------------------------
-\begin{frame}
-\frametitle{Structure of Datatypes: Products}
-
-The pair type is the basic binary \alert{product} type. For symmetry with sums,
-we will use the following type:
-
-\begin{code}
-data (PURPLE(a)) :*: (PURPLE(b)) = (BLUE(a)) :*: (BLUE(b))
-\end{code}
-
-PAUSE_LINE
-
-And more than two fields...
-\begin{code}
-data FldEx_3 = (GREEN(FldEx_3)) (BLUE(Int)) (BLUE(Char)) (BLUE(Float))
-\end{code}
-
-PAUSE
-
-... are modeled by nested binary products:
-\begin{code}
-type FldEx_3' = (BLUE(Int)) :*: ((BLUE(Char)) :*: (BLUE(Float)))
-\end{code}
-
-with the smart constructor:
-\begin{code}
-fldEx_3' :: (BLUE(Int)) -> (BLUE(Char)) -> (BLUE(Float)) -> FldEx_3'
-fldEx_3' x y z = x :*: (y :*: z)
-\end{code}
-
-\end{frame}
-%-------------------------------------------------------------------------------
-\begin{frame}
-\frametitle{Structure of Datatypes: Sums of Products}
-
-To ``sum'' it all up, recall the first datatype example:
-
-\dataD
-
-PAUSE_LINE
-
-We can define an identical type using the sum and product types we have
-just discussed:
-\begin{code}
-type Rep_D (PURPLE(p)) = (BLUE(U)) :+: (BLUE(Int)) :*: (BLUE(p))
+type Rep_E a = (GREEN(C)) U :+: (GREEN(C)) ((BLUE(K)) a :*: (BLUE(K)) (E a) :*: (BLUE(K)) Int)
 \end{code}
 
 PAUSE_LINE
 
 Notes:
-\begin{itemize}INCREMENT
-
-\item We use the ``unit'' type |data U = U| (identical to the standard type
-|()|) to represent an alternative without fields.
-
-\item |:+:| is |infixr 5|, and |:*:| is |infixr 6|, so we can write |Rep_D|
-naturally, without unnecessary parentheses.
-
+\begin{itemize}
+\item |:+:| is |infixr 5| and |:*:| is |infixr 6|.
+\item Operators nest to the right.
 \end{itemize}
 
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{Structure of Datatypes: Isomorphism}
+\frametitle{Converting Between Types: Isomorphism}
 
 %if style /= newcode
-%format from_D = "\Varid{from_{" D "}}"
-%format from_D' = "\Varid{from_{" D "}}"
-%format to_D = "\Varid{to_{" D "}}"
-%format to_D' = "\Varid{to_{" D "}}"
+%format from_E
+%format to_E
 %endif
 
-So, we think we can model datatypes. But how do we know |Rep_D| accurately
-models |D|?
+\begin{itemize}INCREMENT
+
+\item Generic functions work on the sums-of-products model.
+
+\item But first we need to convert between the model and the actual value of the
+datatype.
+
+\item We define an \alert{isomorphism}: two total, dual functions.
+
+\end{itemize}
 
 PAUSE_LINE
 
-We define an \alert{isomorphism}: two total functions that convert between
-types.
-
-PAUSE
-
 \begin{code}
-from_D :: D p -> Rep_D p
-from_D  Alt_1          = L U
-from_D  (Alt_2 i p)    = R (i :*: p)
-
-to_D :: Rep_D p -> D p
-to_D    (L U)          = Alt_1
-to_D    (R (i :*: p))  = Alt_2 i p
+from_E :: E a -> Rep_E a
+from_E  E_1          = L (C "E1" U)
+from_E  (E_2 x e i)  = R (C "E2" ((K x) :*: (K e) :*: (K i)))
 \end{code}
 
-PAUSE
+PAUSE_LINE
 
-This allows us to convert terms between (1) the familiar datatype and (2) the
-\alert{structure representation} used for generic operations.
+\begin{code}
+to_E :: Rep_E a -> E a
+to_E  (L (C "E1" U))                            = E_1
+to_E  (R (C "E2" ((K x) :*: (K e) :*: (K i))))  = E_2 x e i
+\end{code}
 
 \end{frame}
 %-------------------------------------------------------------------------------
@@ -489,9 +520,6 @@ constructors (e.g.\ the names).
 PAUSE_LINE
 
 That's easily repaired with another datatype:
-\begin{code}
-data C (PURPLE(a)) = C String (BLUE(a))
-\end{code}
 
 PAUSE_LINE
 
