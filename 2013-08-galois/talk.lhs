@@ -316,6 +316,10 @@ types.
 
 \end{description}
 
+PAUSE_LINE
+
+We will look at depth into sums-of-products.
+
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
@@ -345,11 +349,10 @@ A datatype can have:
 
 %if style /= newcode
 %format T_prod
-%format P_2
 %endif
 
 \begin{code}
-data T_prod = (GREEN(P_2)) (BLUE(Char)) (BLUE(Int))
+data T_prod = (GREEN(P)) (BLUE(Char)) (BLUE(Int))
 \end{code}
 
 LINE
@@ -890,7 +893,7 @@ class Uniplate' a r where
 \end{code}
 PAUSE
 \begin{itemize}INCREMENT
-\item We need the function parameter type (|r|) in the |Uniplate'| class.
+\item We need the function parameter type (|r|) in the |Uniplate'| head.
 \item We will come back to |Uniplate| later.
 \end{itemize}
 
@@ -945,7 +948,7 @@ instance Uniplate' (K (PURPLE(a))) (PURPLE(a)) where
 \end{code}
 \begin{itemize}INCREMENT
 
-\item Note the matching types |a| in the header.
+\item Note the matching types |a| in the head.
 
 \item Overlapping instances implies type equality.
 
