@@ -3,7 +3,7 @@
 %-------------------------------------------------------------------------------
 % C Preprocessor Directives
 
-#undef DO_PAUSES
+#define DO_PAUSES
 
 #include "pause.h"
 
@@ -41,13 +41,16 @@
 
 %if style == newcode
 \begin{code}
+-- Initial
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE DefaultSignatures #-}
+
+-- Extended
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverlappingInstances #-}
-{-# LANGUAGE DefaultSignatures #-}
 module Talk where
 import Prelude hiding (Show(show))
 \end{code}
@@ -84,6 +87,12 @@ instance Show Char where
 \end{code}
 %endif
 
+%if style == newcode
+\begin{code}
+instance Uniplate (E a)
+instance Fold (E a)
+\end{code}
+%endif
 
 \newcommand{\RepE}{%
 \begin{code}
@@ -302,7 +311,7 @@ Some flavors (or views):
 types.
 \\ Example: Generic Deriving
 
-\item[Fixed point] A datatype is a sums-of-products with recursive points.
+\item[Fixed-point] A datatype is a sums-of-products with recursive points.
 \\ Example: Multirec
 
 \end{description}
@@ -495,16 +504,16 @@ PAUSE_LINE
 
 \begin{code}
 from_E :: E a -> Rep_E a
-from_E  E_1          = L (C "E1" U)
-from_E  (E_2 x e i)  = R (C "E2" ((K x) :*: (K e) :*: (K i)))
+from_E  E_1          = L  (C "E1" U)
+from_E  (E_2 x e i)  = R  (C "E2" ((K x) :*: (K e) :*: (K i)))
 \end{code}
 
 PAUSE_LINE
 
 \begin{code}
 to_E :: Rep_E a -> E a
-to_E  (L (C "E1" U))                            = E_1
-to_E  (R (C "E2" ((K x) :*: (K e) :*: (K i))))  = E_2 x e i
+to_E  (L  (C "E1" U))                            = E_1
+to_E  (R  (C "E2" ((K x) :*: (K e) :*: (K i))))  = E_2 x e i
 \end{code}
 
 \end{frame}
@@ -555,13 +564,13 @@ PAUSE_LINE
 Example: |show_Rep_a :: a -> String|
 
 \begin{itemize}
-\item We will define a |show| function for each case.
+\item We define a |show| function for each case.
 \end{itemize}
 
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{Defining a Generic Function: |show|}
+\frametitle{Defining |show|}
 
 Unit:
 \begin{code}
@@ -588,13 +597,13 @@ show_k show_a (K a) = show_a a
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{Defining a Generic Function: |show|}
+\frametitle{Defining |show|}
 
 Binary sum:
 \begin{code}
 show_sum :: (a -> String) -> (b -> String) -> a :+: b -> String
-show_sum show_a _ (L a) = show_a a
-show_sum _ show_b (R b) = show_b b
+show_sum show_a _ (L  a)  = show_a  a
+show_sum _ show_b (R  b)  = show_b  b
 \end{code}
 
 PAUSE_LINE
@@ -608,7 +617,7 @@ show_prod show_a show_b (a :*: b) = show_a a ++ " " ++ show_b b
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{Defining a Generic Function: |show|}
+\frametitle{Defining |show|}
 
 Recall:
 \RepE{}
@@ -621,7 +630,7 @@ We can define a |show| function (assuming |show_int|):
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{Defining a Generic Function: |show|}
+\frametitle{Defining |show|}
 
 \showRepE{}
 
@@ -636,7 +645,7 @@ show_E show_a = show_Rep_E show_a show_E . (PURPLE(from_E))
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{Defining a Generic Function: |show|}
+\frametitle{Defining |show|}
 
 \showRepE{}
 
@@ -656,7 +665,7 @@ Some observations:
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{Defining a Generic Function: |show|}
+\frametitle{Defining |show|}
 
 Consider these typical expressions and their types:
 \begin{spec}
@@ -678,7 +687,7 @@ a common scheme that reference each other
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{Defining a Generic Function: |show|}
+\frametitle{Defining |show|}
 
 There are several ways to encode polymorphic recursion. We use type classes.
 
@@ -704,7 +713,7 @@ class Show a where
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{Defining a Generic Function: |show|}
+\frametitle{Defining |show|}
 
 Some of the instances for each structure representation case:
 
@@ -751,7 +760,7 @@ instance (Show a, Show b) => Show (a :*: b) where
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{Defining a Generic Function: |show|}
+\frametitle{Defining |show|}
 
 Now, compare:
 \showRepE{}
@@ -767,7 +776,7 @@ show_Rep_E' = show
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{Defining a Generic Function: |show|}
+\frametitle{Defining |show|}
 
 Finally, we can use a slightly different |Show| class to support generic
 functions for any type that has a representation.
@@ -784,8 +793,8 @@ class Show a where
 \end{code}
 \begin{itemize}
 
-\item This uses default signatures: if type |a| has the instances |Show (Rep
-a)| and |Generic a|, then the given definition is used.
+\item This uses the |DefaultSignatures| language extension: if type |a| has the
+instances |Show (Rep a)| and |Generic a|, then the given definition is used.
 
 \end{itemize}
 
@@ -799,43 +808,257 @@ instance Show a => Show (E a)
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{???}
+\frametitle{Sums-of-Products and Beyond}
 
+We presented a sums-of-products view.
+\begin{itemize}INCREMENT
+\item We used Haskell2010 plus a few GHC language extensions:
+\begin{spec}
+{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE DefaultSignatures #-}
+\end{spec}
+\item Typically, a GP library does not support another view.
+\item But we can, with a few more extensions:
+\begin{spec}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE OverlappingInstances #-}
+\end{spec}
+\end{itemize}
+
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{The Uniplate View}
+
+\begin{itemize}INCREMENT
+
+\item Uniplate uses a simplified spine view.
+
+\item The spine is the sequence of fields in a constructor.
+
+\item SYB models the ``full'' spine, i.e.\ all fields (which can naturally have
+different types).
+
+\item Uniplate models only a list of the (recursive) children (which have the
+same type).
+
+\end{itemize}
+
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Defining |descend|}
+
+\begin{itemize}INCREMENT
+
+\item We define the function |descend| from Uniplate to demonstrate that our
+library can model the simplified spine view.
+
+\item |descend| performs a traversal of the children and applies a function to
+each one.
+
+\item We use the following signature:
+\begin{spec}
+class Uniplate a where
+  descend :: (a -> a) -> a -> a
+\end{spec}
+
+\item Note that we must traverse every field to determine whether that field is
+a child or not. (Uniplate does this in an ad-hoc way.)
+
+\item Our generic function must support:
+\begin{itemize}
+\item Polymorphic recursion on the structure (as usual) \textit{and}
+\item A function parameter whose type matches only some of the fields.
+\end{itemize}
+
+\end{itemize}
+
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Defining |descend'|}
+
+Consequently, we use a signature with different types for the function
+parameter and the structure representation:
 \begin{code}
 class Uniplate' a r where
   descend' :: (r -> r) -> a -> a
+\end{code}
+PAUSE
+\begin{itemize}INCREMENT
+\item We need the function parameter type (|r|) in the |Uniplate'| class.
+\item We will come back to |Uniplate| later.
+\end{itemize}
 
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Defining |descend'|}
+
+Most of the instances are straightforward:
+\begin{code}
 instance Uniplate' U a where
   descend' _ U = U
-
-instance Uniplate a => Uniplate' (K a) a where
-  descend' f (K a) = K (f a)
-
-instance Uniplate' (K a) r where
-  descend' _ (K a) = K a
-
+\end{code}
+PAUSE
+\begin{code}
 instance Uniplate' a r => Uniplate' (C a) r where
   descend' f (C nm a) = C nm (descend' f a)
-
+\end{code}
+PAUSE
+\begin{code}
 instance (Uniplate' a r, Uniplate' b r) => Uniplate' (a :+: b) r where
-  descend' f (L a) = L (descend' f a)
-  descend' f (R b) = R (descend' f b)
-
+  descend' f (L  a)  = L  (descend' f a)
+  descend' f (R  b)  = R  (descend' f b)
+\end{code}
+PAUSE
+\begin{code}
 instance (Uniplate' a r, Uniplate' b r) => Uniplate' (a :*: b) r where
   descend' f (a :*: b) = descend' f a :*: descend' f b
+\end{code}
 
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Defining |descend'|}
+
+It is the |K| instance that is interesting.
+
+PAUSE_LINE
+
+Because there is a fall-back instance:
+\begin{code}
+instance Uniplate' (K a) r where
+  descend' _ (K a) = K a
+\end{code}
+
+PAUSE_LINE
+
+And an instance where we apply the function parameter:
+\begin{code}
+instance Uniplate' (K (PURPLE(a))) (PURPLE(a)) where
+  descend' f (K a) = K ((PURPLE(f)) a)
+\end{code}
+\begin{itemize}INCREMENT
+
+\item Note the matching types |a| in the header.
+
+\item Overlapping instances implies type equality.
+
+\item This is the ``trick'' that allows us to determine when to choose this
+instance.
+
+\end{itemize}
+
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Defining |descend|}
+
+Coming back to an improved |Uniplate| class:
+\begin{code}
 class Uniplate a where
   descend :: (a -> a) -> a -> a
 
   default descend :: (Generic a, Uniplate' (Rep a) a) => (a -> a) -> a -> a
   descend f = to . descend' f . from
 \end{code}
+\begin{itemize}INCREMENT
+
+\item We again use |DefaultSignatures| to simplify instantiation.
+
+\item The types of the function parameter and generic parameter are the same.
+
+\item They only differ ``behind the scenes.''
+
+\end{itemize}
 
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{???}
+\frametitle{Uniplate View and Beyond}
 
+We presented a traversal function
+\begin{itemize}INCREMENT
+\item From Uniplate (which is not a sums-of-products library)
+\item In a library with a sums-of-products view
+\item Extended with overlapping instances (and type equality in particular).
+\end{itemize}
+
+PAUSE_LINE
+
+With a bit more work, we can also define functions that work on all fields and
+not just the recursive children, e.g.:
+\begin{spec}
+topDown :: C b a => (a -> a) -> b -> b
+\end{spec}
+\begin{itemize}INCREMENT
+
+\item For a class |C| that supports matching on any type |T| for which there is
+an instance |C T T|
+
+\item Similar to the function |everywhere'| in SYB
+
+\end{itemize}
+
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{The Fixed-Point View}
+
+\begin{itemize}INCREMENT
+
+\item We can use the type equality trick to model the fixed-point view in our
+library.
+
+\item The fixed-point view typically extends the sums-of-products view with an
+explicit indicator of recursive points in the structure.
+
+\item In the basic sums-of-products view, recursion occurs on the structure but
+not on the datatype.
+
+\item In the basic fixed-point view, we define one case of a generic function
+on the recursive points structural element.
+
+\item In our library, we pass the top-level type |T| through the type cases.
+
+\item The case at which we can match on |T| is the recursive point.
+
+\end{itemize}
+
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Defining |fold|}
+
+\begin{itemize}INCREMENT
+
+\item We define the function |fold| (catamorphism).
+
+\item |fold| iterates from the root of a value to its leaves and builds up a
+new result based on the recursive structure of the input.
+
+\item We use the following signature:
+\begin{spec}
+class Fold a where
+  fold :: Alg (Rep a) r -> a -> r
+\end{spec}
+
+\item Given an algebra and a value, compute the result of applying the algebra
+to the structure of the value.
+
+\end{itemize}
+
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Defining |Alg|}
+
+The algebra of the fold is a type family:
 \begin{code}
 type family Alg a r
 
@@ -844,74 +1067,176 @@ type instance Alg (K a)         r = Either a r -> r
 type instance Alg (C a)         r = Alg a r
 type instance Alg (a :+: b)     r = (Alg a r, Alg b r)
 type instance Alg (K a :*: b)   r = Either a r -> Alg b r
-
-class Fold' a c where
-  fold' :: proxy c -> Alg (Rep c) r -> Alg a r -> a -> r
-
-instance Fold' U c where
-  fold' _ _ alg U = alg
-
-instance Fold a => Fold' (K a) a where
-  fold' p palg alg (K a) = alg (Right (fold palg a))
-
-instance Fold' (K a) c where
-  fold' p _ alg (K a) = alg (Left a)
-
-instance Fold' a c => Fold' (C a) c where
-  fold' p palg alg (C _ a) = fold' p palg alg a
-
-instance (Fold' a c, Fold' b c) => Fold' (a :+: b) c where
-  fold' p palg (alg, _) (L a) = fold' p palg alg a
-  fold' p palg (_, alg) (R b) = fold' p palg alg b
-
-instance (Fold a, Fold' b a) => Fold' (K a :*: b) a where
-  fold' p palg alg (K a :*: b) = fold' p palg (alg (Right (fold palg a))) b
-
-instance Fold' b c => Fold' (K a :*: b) c where
-  fold' p palg alg (K a :*: b) = fold' p palg (alg (Left a)) b
-
-class (Generic a, Fold' (Rep a) a) => Fold a where
-  fold :: Alg (Rep a) r -> a -> r
-  fold alg x = fold' (Just x) alg alg (from x)
 \end{code}
+\begin{itemize}INCREMENT
+\item |Alg| is indexed on the representation type of the input type |a|.
+\item The type |r| is the result of the fold.
+\item |K| types can be either non-recursive (|a|) or recursive (|r|) points.
+\end{itemize}
 
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Defining |Alg|}
+
+For the example type:
+\RepE{}
+
+The algebra type is:
+\begin{spec}
+type instance Alg (Rep (E a)) r =
+  (r, Either a r -> Either (E a) r -> Either Int r -> r)
+\end{spec}
+\begin{itemize}INCREMENT
+
+\item |E a| is the recursive point, even though it does not appear so in the
+type.
+
+\item The instances of the generic function ensure the separation of
+non-recursive and recursive |K| cases.
+
+\end{itemize}
+
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Defining |Fold'|}
+
+We again define a helper generic function:
 \begin{code}
-instance Uniplate (E a)
-instance Fold (E a)
+class Fold' a t where
+  fold' :: proxy t -> Alg (Rep t) r -> Alg a r -> a -> r
+\end{code}
+\begin{itemize}INCREMENT
+
+\item |a| is the structure type.
+
+\item |t| is the recursive type.
+
+\item The ``proxy'' provides proof of |t| while preventing the instances of
+|Fold'| from using it.
+
+\end{itemize}
+
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Defining |Fold'|}
+
+The instances that do not have recursion:
+\begin{code}
+instance Fold' U t where
+  fold' _ _ alg U = alg
+\end{code}
+\begin{code}
+instance Fold' a t => Fold' (C a) t where
+  fold' p palg alg (C _ a) = fold' p palg alg a
+\end{code}
+\begin{code}
+instance (Fold' a t, Fold' b t) => Fold' (a :+: b) t where
+  fold' p palg (alg, _) (L  a)  = fold' p palg alg a
+  fold' p palg (_, alg) (R  b)  = fold' p palg alg b
 \end{code}
 
 \end{frame}
 %-------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{GP in General}
+\frametitle{Defining |Fold'|}
+
+The fall-back |K| instance:
+\begin{code}
+instance Fold' (K a) t where
+  fold' p _ alg (K a) = alg (Left a)
+\end{code}
+
+PAUSE_LINE
+
+The recursive |K| instance:
+\begin{code}
+instance Fold t => Fold' (K (PURPLE(t))) (PURPLE(t)) where
+  fold' p palg alg (K t) = (PURPLE(alg)) (Right (fold palg t))
+\end{code}
+
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Defining |Fold'|}
+
+The fall-back |:*:| instance:
+\begin{code}
+instance Fold' b t => Fold' (K a :*: b) t where
+  fold' p palg alg (K a :*: b) = fold' p palg (alg (Left a)) b
+\end{code}
+
+PAUSE_LINE
+
+The recursive |:*:| instance:
+\begin{code}
+instance (Fold t, Fold' b t) => Fold' (K (PURPLE(t)) :*: b) (PURPLE(t)) where
+  fold' p palg alg (K a :*: b) = fold' p palg ((PURPLE(alg)) (Right (fold palg a))) b
+\end{code}
+
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Defining |fold|}
+
+The improved |Fold| class:
+\begin{code}
+class Fold a where
+  fold :: Alg (Rep a) r -> a -> r
+
+  default fold :: (Generic a, Fold' (Rep a) a) => Alg (Rep a) r -> a -> r
+  fold alg x = fold' (Just x) alg alg (from x)
+\end{code}
+\begin{itemize}INCREMENT
+
+\item We use |Maybe| as a simple proxy.
+
+\item The algebra is needed twice: the second argument is pattern-matched by
+the instances of |Fold'|.
+
+\end{itemize}
+
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Fold and Beyond}
+
+We presented a generic recursive pattern in a library that would not typically
+have it.
 
 \begin{itemize}INCREMENT
 
-\item Datatype-generic programming:
-\begin{itemize}
-\item Datatype is the parameter
-\item Instantiation gives you a large class of generic functions
+\item We can also define many other (co-)recursive functions, including the
+generic zipper.
+
+\item The unfortunate aspect of |Alg| is that we must use |Either| since, in
+the type family, we cannot distinguish overlapping instances.
+
+\item We believe this can be fixed with the new ordered overlapping instances
+in GHC.
+
 \end{itemize}
 
-\item Many generic functions:
-\begin{itemize}
-\item Pretty-printing (|show|) and parsing (|read|)
-\item Compression, serialization, and the reverse
-\item Comparison, equality
-\item Folds (catamorphisms), unfolds (anamorphisms), maps, zips, zippers
-\item Traversals, updates, queries
-\end{itemize}
+\end{frame}
+%-------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Conclusions}
 
-\item Many different libraries:
-\begin{itemize}
-\item Instant Generics -- presented here
-\item Generic Deriving -- GHC \(\geq\) 7.2, similar to Instant Generics
-\item EMGM -- maintained by me
-\item Regular -- folds, etc.
-\item Multirec -- mutually recursive datatypes, folds, etc.
-\item Scrap Your Boilerplate (SYB) -- GHC, traversals, queries
-\item ...
-\end{itemize}
+\begin{itemize}INCREMENT
+
+\item We believe generic programming is easy to understand if looked at from
+the right perspective.
+
+\item We are still searching for that optimal view.
+
+\item The library presented here is quite simple.
+
+\item Yet, with a few tricks, it is also quite powerful.
+
+\item We have also done this work in the more complicated Generic Deriving
+library.
 
 \end{itemize}
 
@@ -920,7 +1245,6 @@ instance Fold (E a)
 \begin{frame}
 \frametitle{References}
 
-Generic Programming in Haskell:
 \begin{itemize}
 
 \item Johan Jeuring, Sean Leather, Jos\'{e} Pedro Magalh\~{a}es, Alexey
@@ -928,6 +1252,8 @@ Rodriguez Yakushev. \textit{Libraries for Generic Programming in Haskell}. AFP
 2008. pp. 165-229, 2009.
 
 \item Generic Deriving: \url{http://www.haskell.org/haskellwiki/GHC.Generics}
+
+\item Generic Deriving Extras: \url{https://github.com/spl/generic-deriving-extras}
 
 \end{itemize}
 
