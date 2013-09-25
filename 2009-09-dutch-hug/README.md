@@ -10,5 +10,5 @@
 This talk describes the motivation behind and design of the `xformat` library
 aimed at solving the "printf" problem.
 
-[Download](https://github.com/downloads/spl/talks/Extensibility%20and%20type%20safety%20in%20formatting:%20The%20design%20of%20xformat%20-%20Dutch%20HUG%20-%202009-09-11.pdf)
+[Download](https://github.com/spl/talks/raw/master/2009-09-dutch-hug/talk.pdf)
 

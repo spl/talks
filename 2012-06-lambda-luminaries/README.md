@@ -13,5 +13,5 @@ The description should be accessible by anyone familiar with Haskell. The second
 part describes another application of generics and type system features of
 Haskell to solve the "printf" problem.
 
-[Download](https://github.com/downloads/spl/talks/Generic%20Programming%20in%20Haskell%20-%20Lambda%20Luminaries%20-%202012-06-21.pdf)
+[Download](https://github.com/spl/talks/raw/master/2012-06-lambda-luminaries/talk.pdf)
 
