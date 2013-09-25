@@ -1,4 +1,4 @@
-**Title:**      Dissecting Flavors of GP in Haskell
+**Title:**      Dissecting Different Flavors of Generic Programming in One Haskell Universe
 
 **Date:**       2013-08-27
 
