@@ -1,17 +1,20 @@
-**Title:**      Generic Programming in Haskell
+**Title:**      Dissecting Flavors of GP in Haskell
 
-**Date:**       2012-06-21
+**Date:**       2013-08-27
 
-**Location:**   [House4Hack](http://www.house4hack.co.za/) in Centurion, South Africa
+**Location:**   [Galois](http://corp.galois.com/) in Portland, Oregon, USA
 
-**Audience:**   [Lambda Luminaries](http://www.meetup.com/lambda-luminaries/)
+**Audience:**   Galois employees
 
 **Abstract:**
-This talk has two parts. The first part introduces the concepts of
-datatype-generic programming from the basics of datatypes and their structure.
-The description should be accessible by anyone familiar with Haskell. The second
-part describes another application of generics and type system features of
-Haskell to solve the "printf" problem.
+The goals of this talk are (1) to introduce datatype-generic programming in
+Haskell using a simplified version of the ``Generic Deriving'' library and (2)
+to demonstrate how this particular library can be adapted to support multiple
+flavors (or views) of datatype-generic programming. We start by describing the
+basic sums-of-products flavor as a foundation and end with presentations of a
+Uniplate function (demonstrating the Uniplate flavor) and a fold (demonstrating
+the fixed-point view). Type eqality using overlapping instances plays a key part
+in extending the initial library to support other flavors.
 
-[Download](https://github.com/downloads/spl/talks/Generic%20Programming%20in%20Haskell%20-%20Lambda%20Luminaries%20-%202012-06-21.pdf)
+[Download](https://github.com/spl/talks/raw/master/2013-08-galois/talk.pdf)
 
