@@ -21,5 +21,5 @@ this talk, we look at the building blocks of EMGM, at various generic functions
 provided by the library, how do define one's own generic function, and at some
 potential uses.
 
-[Download](https://github.com/spl/talks/raw/master/2009-07-london-hug/talk.pdf)
+[**Download PDF**](https://github.com/spl/talks/raw/master/2009-07-london-hug/talk.pdf)
 

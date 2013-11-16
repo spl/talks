@@ -12,5 +12,5 @@ available with GHC starting from version 7.2. It includes a thorough description
 of the compiler mechanisms as well as the library. It concludes with an example
 of implement `generic-deriving` for the `binary` library.
 
-[Download](https://github.com/spl/talks/raw/master/2011-11-dutch-hug/talk.pdf)
+[**Download PDF**](https://github.com/spl/talks/raw/master/2011-11-dutch-hug/talk.pdf)
 

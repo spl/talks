@@ -10,5 +10,5 @@
 This talk describes the motivation behind and design of the `xformat` library
 aimed at solving the "printf" problem.
 
-[Download](https://github.com/spl/talks/raw/master/2009-09-dutch-hug/talk.pdf)
+[**Download PDF**](https://github.com/spl/talks/raw/master/2009-09-dutch-hug/talk.pdf)
 

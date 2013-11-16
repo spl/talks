@@ -16,5 +16,5 @@ Uniplate function (demonstrating the Uniplate flavor) and a fold (demonstrating
 the fixed-point view). Type eqality using overlapping instances plays a key part
 in extending the initial library to support other flavors.
 
-[Download](https://github.com/spl/talks/raw/master/2013-08-galois/talk.pdf)
+[**Download PDF**](https://github.com/spl/talks/raw/master/2013-08-galois/talk.pdf)
 
